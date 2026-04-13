@@ -9,38 +9,20 @@ description: Start a pipeline run. Orchestrator selects the right pipeline from:
 
 1. Ask for task description if not provided.
 
-2. Invoke the Orchestrator agent to select the pipeline mode.
+2. Hand off to the Orchestrator agent to run the full pipeline:
 
-   Prompt:
    ```
-   You are the Orchestrator. Given this task, select the correct pipeline mode.
+   You are the Orchestrator. A new pipeline run has been requested.
 
    Task: <task description>
 
-   Modes:
-   - full-ui            New feature + UI changes
-   - full-logic         New feature, no UI
-   - lightweight-ui     Bug fix or small change + UI
-   - lightweight-logic  Bug fix or small change, no UI
-   - refactor           Behavior-preserving restructure only
-   - hotfix             Production incident — time-critical
-   - dependency-bump    Library version update only
-   - config-data        Config, constant, or static data change only
-   - docs-only          Docs or comments only
-   - poc                Fast proof-of-concept — NOT shippable
+   Your responsibilities:
+   1. Select the correct pipeline mode based on the task. Available modes and their role sequences are defined in .claude/skills/sdlc/<mode>/SKILL.md. Read the relevant ones before deciding.
+   2. State your selected mode and why. Confirm with the user before proceeding.
+   3. Create a task slug (lowercase, hyphenated, short) and add a row to taskboard.md.
+   4. Run the full pipeline — spawn agents in the correct sequence, enforce all mandatory gates, manage concurrency where the mode allows it.
 
-   Respond with:
-   - Selected mode and one sentence explaining why
-   - Any assumptions made
+   Follow your standard operating procedure in agents/orchestrator.md (or .claude/agents/orchestrator.md).
    ```
 
-   Present the Orchestrator's selection to the user and confirm before proceeding. If the user disagrees, re-run with their correction.
-
-3. Create task slug — lowercase, hyphenated, short.
-
-4. Add taskboard row to `taskboard.md`:
-   ```
-   | **[<slug>]** <description> | In Progress | <first role> | — | Relay: sdlc/<slug>/relay.md. <Mode>. |
-   ```
-
-5. Invoke the matching sub-skill and follow its relay creation and role sequence.
+The Orchestrator owns everything from mode selection through pipeline completion.
