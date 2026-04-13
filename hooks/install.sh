@@ -17,6 +17,7 @@ mkdir -p \
 
 # Copy agent files (always overwrite — plugin-managed definitions)
 for f in "$PLUGIN_ROOT/agents/"*.md; do
+  [[ "$(basename "$f")" == *.original.md ]] && continue
   dest="$PROJECT_ROOT/.claude/agents/$(basename "$f")"
   cp "$f" "$dest"
   echo "  updated: .claude/agents/$(basename "$f")"
@@ -33,12 +34,20 @@ for agent in architect developer skeptic tester security-auditor ux-designer \
 done
 
 # Copy skills (always overwrite — plugin-managed)
-mkdir -p "$PROJECT_ROOT/.claude/skills"
-if [ -d "$PLUGIN_ROOT/skills/sdlc" ]; then
-  rm -rf "$PROJECT_ROOT/.claude/skills/sdlc"
-  cp -r "$PLUGIN_ROOT/skills/sdlc" "$PROJECT_ROOT/.claude/skills/sdlc"
-  echo "  updated: .claude/skills/sdlc"
-fi
+# Root skill: .claude/skills/sdlc/SKILL.md → /sdlc
+# Sub-skills: .claude/skills/sdlc:<mode>/SKILL.md → /sdlc:<mode>
+mkdir -p "$PROJECT_ROOT/.claude/skills/sdlc"
+cp "$PLUGIN_ROOT/skills/sdlc/SKILL.md" "$PROJECT_ROOT/.claude/skills/sdlc/SKILL.md"
+echo "  updated: .claude/skills/sdlc/SKILL.md"
+
+for mode_dir in "$PLUGIN_ROOT/skills/sdlc/"/*/; do
+  [ -f "${mode_dir}SKILL.md" ] || continue
+  mode=$(basename "$mode_dir")
+  dest="$PROJECT_ROOT/.claude/skills/sdlc:$mode"
+  mkdir -p "$dest"
+  cp "${mode_dir}SKILL.md" "$dest/SKILL.md"
+  echo "  updated: .claude/skills/sdlc:$mode/SKILL.md"
+done
 
 # Copy templates
 cp "$PLUGIN_ROOT/templates/relay-template.md" "$PROJECT_ROOT/templates/relay-template.md"
