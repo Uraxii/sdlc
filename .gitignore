@@ -1,2 +1,9 @@
 node_modules/
-dist/
+dist/staging/
+dist/*.zip
+dist/.compress-cache.json
+agents/*.md
+!agents/*.original.md
+!agents/CLAUDE.md
+!agents/agent-memory.md
+.env
