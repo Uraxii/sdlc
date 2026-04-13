@@ -34,19 +34,12 @@ for agent in architect developer skeptic tester security-auditor ux-designer \
 done
 
 # Copy skills (always overwrite — plugin-managed)
-# Root skill: .claude/skills/sdlc/SKILL.md → /sdlc
-# Sub-skills: .claude/skills/sdlc:<mode>/SKILL.md → /sdlc:<mode>
-mkdir -p "$PROJECT_ROOT/.claude/skills/sdlc"
-cp "$PLUGIN_ROOT/skills/sdlc/SKILL.md" "$PROJECT_ROOT/.claude/skills/sdlc/SKILL.md"
-echo "  updated: .claude/skills/sdlc/SKILL.md"
-
-for mode_dir in "$PLUGIN_ROOT/skills/sdlc/"/*/; do
+for mode_dir in "$PLUGIN_ROOT/skills/claude-code/"/*/; do
   [ -f "${mode_dir}SKILL.md" ] || continue
-  mode=$(basename "$mode_dir")
-  dest="$PROJECT_ROOT/.claude/skills/sdlc-$mode"
+  dest="$PROJECT_ROOT/.claude/skills/$(basename "$mode_dir")"
   mkdir -p "$dest"
   cp "${mode_dir}SKILL.md" "$dest/SKILL.md"
-  echo "  updated: .claude/skills/sdlc-$mode/SKILL.md"
+  echo "  updated: .claude/skills/$(basename "$mode_dir")/SKILL.md"
 done
 
 # Copy templates

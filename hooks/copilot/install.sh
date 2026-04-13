@@ -19,7 +19,7 @@ else
   echo "  copied: .github/copilot-instructions.md"
 fi
 
-for skill_dir in "$PLUGIN_ROOT/skills-copilot/"/*/; do
+for skill_dir in "$PLUGIN_ROOT/skills/copilot/"/*/; do
   [ -f "${skill_dir}SKILL.md" ] || continue
   name=$(basename "$skill_dir")
   dest_dir="$PROJECT_ROOT/.github/skills/$name"
