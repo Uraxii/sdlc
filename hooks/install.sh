@@ -15,15 +15,11 @@ mkdir -p \
   "$PROJECT_ROOT/templates" \
   "$PROJECT_ROOT/sdlc"
 
-# Copy agent files
+# Copy agent files (always overwrite — plugin-managed definitions)
 for f in "$PLUGIN_ROOT/agents/"*.md; do
   dest="$PROJECT_ROOT/.claude/agents/$(basename "$f")"
-  if [ -f "$dest" ]; then
-    echo "  skip (exists): .claude/agents/$(basename "$f")"
-  else
-    cp "$f" "$dest"
-    echo "  copied: .claude/agents/$(basename "$f")"
-  fi
+  cp "$f" "$dest"
+  echo "  updated: .claude/agents/$(basename "$f")"
 done
 
 # Create empty memory files (skip if present)
@@ -36,11 +32,12 @@ for agent in architect developer skeptic tester security-auditor ux-designer \
   fi
 done
 
-# Copy skills
+# Copy skills (always overwrite — plugin-managed)
 mkdir -p "$PROJECT_ROOT/.claude/skills"
 if [ -d "$PLUGIN_ROOT/skills/sdlc" ]; then
+  rm -rf "$PROJECT_ROOT/.claude/skills/sdlc"
   cp -r "$PLUGIN_ROOT/skills/sdlc" "$PROJECT_ROOT/.claude/skills/sdlc"
-  echo "  copied: .claude/skills/sdlc"
+  echo "  updated: .claude/skills/sdlc"
 fi
 
 # Copy templates

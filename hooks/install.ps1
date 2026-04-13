@@ -21,15 +21,11 @@ foreach ($d in $dirs) {
   if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p | Out-Null }
 }
 
-# Copy agent files
+# Copy agent files (always overwrite — plugin-managed definitions)
 Get-ChildItem -Path "$PluginRoot\agents\*.md" | ForEach-Object {
   $dest = Join-Path $ProjectRoot ".claude\agents\$($_.Name)"
-  if (Test-Path $dest) {
-    Write-Host "  skip (exists): .claude\agents\$($_.Name)"
-  } else {
-    Copy-Item $_.FullName $dest
-    Write-Host "  copied: .claude\agents\$($_.Name)"
-  }
+  Copy-Item $_.FullName $dest -Force
+  Write-Host "  updated: .claude\agents\$($_.Name)"
 }
 
 # Create empty memory files
@@ -43,13 +39,15 @@ foreach ($a in $agents) {
   }
 }
 
-# Copy skills
+# Copy skills (always overwrite — plugin-managed)
 $skillsDest = Join-Path $ProjectRoot ".claude\skills"
 if (-not (Test-Path $skillsDest)) { New-Item -ItemType Directory -Path $skillsDest | Out-Null }
 $skillsSrc = Join-Path $PluginRoot "skills\sdlc"
 if (Test-Path $skillsSrc) {
-  Copy-Item $skillsSrc (Join-Path $skillsDest "sdlc") -Recurse -Force
-  Write-Host "  copied: .claude\skills\sdlc"
+  $skillsTarget = Join-Path $skillsDest "sdlc"
+  if (Test-Path $skillsTarget) { Remove-Item $skillsTarget -Recurse -Force }
+  Copy-Item $skillsSrc $skillsTarget -Recurse
+  Write-Host "  updated: .claude\skills\sdlc"
 }
 
 # Copy templates
