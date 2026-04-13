@@ -21,40 +21,40 @@ claude plugin install github.com/Uraxii/sdlc && bash "$CLAUDE_PLUGIN_ROOT/hooks/
 **Without plugin manager:**
 
 ```bash
-git clone https://github.com/Uraxii/sdlc _sdlc && bash _sdlc/hooks/install.sh && rm -rf _sdlc
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-claude-code.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/hooks/install.sh && rm -rf _sdlc _sdlc.zip
 ```
 
 ### GitHub Copilot
 
 ```bash
-git clone https://github.com/Uraxii/sdlc _sdlc && mkdir -p .github && cp _sdlc/.github/copilot-instructions.md .github/ && rm -rf _sdlc
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-copilot.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
 ```
 
 ### Cursor
 
 ```bash
-git clone https://github.com/Uraxii/sdlc _sdlc && mkdir -p .cursor/rules .cursor/skills/sdlc && cp _sdlc/.cursor/rules/sdlc.mdc .cursor/rules/ && cp _sdlc/.cursor/skills/sdlc/SKILL.md .cursor/skills/sdlc/ && rm -rf _sdlc
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-cursor.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
 ```
 
 ### Windsurf
 
 ```bash
-git clone https://github.com/Uraxii/sdlc _sdlc && mkdir -p .windsurf/rules .windsurf/skills/sdlc && cp _sdlc/.windsurf/rules/sdlc.md .windsurf/rules/ && cp _sdlc/.windsurf/skills/sdlc/SKILL.md .windsurf/skills/sdlc/ && rm -rf _sdlc
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-windsurf.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
 ```
 
 ### Cline
 
 ```bash
-git clone https://github.com/Uraxii/sdlc _sdlc && mkdir -p .clinerules && cp _sdlc/.clinerules/sdlc.md .clinerules/ && rm -rf _sdlc
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-cline.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
 ```
 
 ### Codex / OpenAI
 
 ```bash
-git clone https://github.com/Uraxii/sdlc _sdlc && cp _sdlc/AGENTS.md . && rm -rf _sdlc
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-codex.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
 ```
 
-**Windows:** equivalent `.ps1` scripts are in `hooks/` and `hooks/<ide>/` for each of the above.
+**Windows:** each zip includes an `install.ps1`. Download the zip, extract it, and run the `.ps1` instead of the `.sh`.
 
 ---
 
