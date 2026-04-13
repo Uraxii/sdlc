@@ -25,6 +25,7 @@ ZIPS = {
     ],
     "sdlc-copilot": [
         ("",                 ".github/copilot-instructions.md"),
+        ("",                 ".github/copilot/sdlc.prompt.md"),
         ("",                 "hooks/copilot/install.sh"),
         ("",                 "hooks/copilot/install.ps1"),
     ],
