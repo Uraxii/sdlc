@@ -1,32 +1,40 @@
 ---
 name: sdlc
-description: Start a pipeline run. Shows available pipeline modes — full-ui, full-logic, lightweight-ui, lightweight-logic, refactor, hotfix, dependency-bump, config-data, docs-only, poc.
+description: Start a pipeline run. Orchestrator selects the right pipeline from: full-ui, full-logic, lightweight-ui, lightweight-logic, refactor, hotfix, dependency-bump, config-data, docs-only, poc.
 ---
 
 # SDLC Initialization
 
 ## Procedure
 
-1. Present the pipeline menu:
+1. Ask for task description if not provided.
 
+2. Invoke the Orchestrator agent to select the pipeline mode.
+
+   Prompt:
    ```
-   Select a pipeline:
+   You are the Orchestrator. Given this task, select the correct pipeline mode.
 
-     1. full-ui            New feature + UI
-     2. full-logic         New feature, no UI
-     3. lightweight-ui     Bug fix + UI
-     4. lightweight-logic  Bug fix, no UI
-     5. refactor           Behavior-preserving restructure
-     6. hotfix             Production incident
-     7. dependency-bump    Library version update only
-     8. config-data        Config, constant, or static data change
-     9. docs-only          Docs or comments only
-    10. poc                Fast proof-of-concept — NOT shippable
+   Task: <task description>
+
+   Modes:
+   - full-ui            New feature + UI changes
+   - full-logic         New feature, no UI
+   - lightweight-ui     Bug fix or small change + UI
+   - lightweight-logic  Bug fix or small change, no UI
+   - refactor           Behavior-preserving restructure only
+   - hotfix             Production incident — time-critical
+   - dependency-bump    Library version update only
+   - config-data        Config, constant, or static data change only
+   - docs-only          Docs or comments only
+   - poc                Fast proof-of-concept — NOT shippable
+
+   Respond with:
+   - Selected mode and one sentence explaining why
+   - Any assumptions made
    ```
 
-   If the user already provided a mode (e.g. `/sdlc:hotfix`), skip this step.
-
-2. Ask for task description if not provided.
+   Present the Orchestrator's selection to the user and confirm before proceeding. If the user disagrees, re-run with their correction.
 
 3. Create task slug — lowercase, hyphenated, short.
 
