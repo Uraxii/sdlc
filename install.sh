@@ -46,26 +46,27 @@ if [ -z "$IDE" ]; then
   done
 fi
 
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+STAGING=".sdlc-install"
+trap 'rm -rf "$STAGING"' EXIT
 
 ZIP="sdlc-${IDE}.zip"
 echo "Downloading $ZIP..."
-curl -fsSL "$BASE_URL/$ZIP" -o "$TMP/$ZIP"
+curl -fsSL "$BASE_URL/$ZIP" -o "$ZIP"
 
 echo "Extracting..."
 if command -v unzip >/dev/null 2>&1; then
-  unzip -q "$TMP/$ZIP" -d "$TMP/sdlc"
+  unzip -q "$ZIP" -d "$STAGING"
 elif command -v python3 >/dev/null 2>&1; then
-  python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$TMP/$ZIP" "$TMP/sdlc"
+  python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$ZIP" "$STAGING"
 else
   echo "ERROR: neither 'unzip' nor 'python3' found. Install one and re-run."
   exit 1
 fi
+rm "$ZIP"
 
 echo "Installing ($IDE)..."
 if [ "$IDE" = "claude-code" ]; then
-  bash "$TMP/sdlc/hooks/install.sh"
+  bash "$STAGING/hooks/install.sh"
 else
-  bash "$TMP/sdlc/hooks/$IDE/install.sh"
+  bash "$STAGING/hooks/$IDE/install.sh"
 fi
