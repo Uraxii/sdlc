@@ -22,7 +22,7 @@ foreach ($d in $dirs) {
 }
 
 # Copy agent files (always overwrite — plugin-managed definitions)
-Get-ChildItem -Path "$PluginRoot\agents\*.md" | ForEach-Object {
+Get-ChildItem -Path "$PluginRoot\agents\*.md" | Where-Object { $_.Name -notlike "*.original.md" } | ForEach-Object {
   $dest = Join-Path $ProjectRoot ".claude\agents\$($_.Name)"
   Copy-Item $_.FullName $dest -Force
   Write-Host "  updated: .claude\agents\$($_.Name)"
@@ -40,14 +40,24 @@ foreach ($a in $agents) {
 }
 
 # Copy skills (always overwrite — plugin-managed)
+# Root skill: .claude/skills/sdlc/SKILL.md → /sdlc
+# Sub-skills: .claude/skills/sdlc:<mode>/SKILL.md → /sdlc:<mode>
 $skillsDest = Join-Path $ProjectRoot ".claude\skills"
 if (-not (Test-Path $skillsDest)) { New-Item -ItemType Directory -Path $skillsDest | Out-Null }
-$skillsSrc = Join-Path $PluginRoot "skills\sdlc"
-if (Test-Path $skillsSrc) {
-  $skillsTarget = Join-Path $skillsDest "sdlc"
-  if (Test-Path $skillsTarget) { Remove-Item $skillsTarget -Recurse -Force }
-  Copy-Item $skillsSrc $skillsTarget -Recurse
-  Write-Host "  updated: .claude\skills\sdlc"
+
+$rootDest = Join-Path $skillsDest "sdlc"
+if (-not (Test-Path $rootDest)) { New-Item -ItemType Directory -Path $rootDest | Out-Null }
+Copy-Item (Join-Path $PluginRoot "skills\sdlc\SKILL.md") (Join-Path $rootDest "SKILL.md") -Force
+Write-Host "  updated: .claude\skills\sdlc\SKILL.md"
+
+Get-ChildItem (Join-Path $PluginRoot "skills\sdlc") -Directory | ForEach-Object {
+  $modeSrc = Join-Path $_.FullName "SKILL.md"
+  if (Test-Path $modeSrc) {
+    $modeDest = Join-Path $skillsDest "sdlc:$($_.Name)"
+    if (-not (Test-Path $modeDest)) { New-Item -ItemType Directory -Path $modeDest | Out-Null }
+    Copy-Item $modeSrc (Join-Path $modeDest "SKILL.md") -Force
+    Write-Host "  updated: .claude\skills\sdlc:$($_.Name)\SKILL.md"
+  }
 }
 
 # Copy templates
