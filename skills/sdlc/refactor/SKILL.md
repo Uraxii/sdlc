@@ -1,5 +1,5 @@
 ---
-name: sdlc:refactor
+name: sdlc-refactor
 description: Refactor mode — behavior-preserving restructure. Architect → Skeptic → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer.
 ---
 

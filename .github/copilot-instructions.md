@@ -17,9 +17,32 @@ Prefix each response `**[RoleName]**`.
 
 ---
 
-## Modes
+## Starting a pipeline
 
-Invoke by name: `Use sdlc:<mode> for this task.`
+If user says `/sdlc`, `start sdlc`, or describes a task without specifying a mode:
+1. Analyze the task
+2. Select the correct mode (see table below)
+3. State: `**[Orchestrator]** Mode: sdlc:<mode> — <one sentence why>.` then proceed immediately
+4. Run the pipeline for that mode
+
+| Mode | When |
+|------|------|
+| `full-ui` | New feature + UI changes |
+| `full-logic` | New feature, no UI |
+| `lightweight-ui` | Bug fix or small change + UI |
+| `lightweight-logic` | Bug fix or small change, no UI |
+| `refactor` | Behavior-preserving restructure only |
+| `hotfix` | Production incident — time-critical |
+| `dependency-bump` | Library version update only |
+| `config-data` | Config, constant, or static data change only |
+| `docs-only` | Docs or comments only |
+| `poc` | Fast proof-of-concept — NOT shippable |
+
+To invoke a mode directly: `Use sdlc:<mode> for this task.`
+
+---
+
+## Modes
 
 ### `sdlc:full-ui` — New feature + UI
 ```

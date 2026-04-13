@@ -1,5 +1,5 @@
 ---
-name: sdlc:config-data
+name: sdlc-config-data
 description: Config/Data-only mode — config array, constant, static data change. Skeptic → Friction Reviewer.
 ---
 

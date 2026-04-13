@@ -1,5 +1,5 @@
 ---
-name: sdlc:dependency-bump
+name: sdlc-dependency-bump
 description: Dependency Bump mode — library version update only. Security Auditor → Tester.
 ---
 

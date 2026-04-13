@@ -1,5 +1,5 @@
 ---
-name: sdlc:full-ui
+name: sdlc-full-ui
 description: Full-UI mode — new feature with UI. Architect → UX Designer → Skeptic → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer.
 ---
 

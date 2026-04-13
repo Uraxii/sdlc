@@ -1,5 +1,5 @@
 ---
-name: sdlc:lightweight-ui
+name: sdlc-lightweight-ui
 description: Lightweight-UI mode — bug fix with UI. UX Designer → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer.
 ---
 

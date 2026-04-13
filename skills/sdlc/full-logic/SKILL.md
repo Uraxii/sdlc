@@ -1,5 +1,5 @@
 ---
-name: sdlc:full-logic
+name: sdlc-full-logic
 description: Full-Logic mode — new feature, no UI. Architect → Skeptic → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: sdlc:lightweight-logic
+name: sdlc-lightweight-logic
 description: Lightweight-Logic mode — bug fix, no UI. Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer.
 ---
 

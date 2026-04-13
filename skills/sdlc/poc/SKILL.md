@@ -1,5 +1,5 @@
 ---
-name: sdlc:poc
+name: sdlc-poc
 description: POC mode — build + test features fast and cheap. NOT shippable. Requires full pipeline before merge to main.
 ---
 

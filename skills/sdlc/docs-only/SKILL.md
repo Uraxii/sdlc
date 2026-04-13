@@ -1,5 +1,5 @@
 ---
-name: sdlc:docs-only
+name: sdlc-docs-only
 description: Docs-only mode — documentation or comments only. Skeptic only.
 ---
 

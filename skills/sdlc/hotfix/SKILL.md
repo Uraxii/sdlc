@@ -1,5 +1,5 @@
 ---
-name: sdlc:hotfix
+name: sdlc-hotfix
 description: Hotfix mode — production incident, time-critical. Developer → [Skeptic ∥ Security Auditor] → Tester → deploy → Friction Reviewer async.
 ---
 

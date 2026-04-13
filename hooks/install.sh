@@ -43,10 +43,10 @@ echo "  updated: .claude/skills/sdlc/SKILL.md"
 for mode_dir in "$PLUGIN_ROOT/skills/sdlc/"/*/; do
   [ -f "${mode_dir}SKILL.md" ] || continue
   mode=$(basename "$mode_dir")
-  dest="$PROJECT_ROOT/.claude/skills/sdlc:$mode"
+  dest="$PROJECT_ROOT/.claude/skills/sdlc-$mode"
   mkdir -p "$dest"
   cp "${mode_dir}SKILL.md" "$dest/SKILL.md"
-  echo "  updated: .claude/skills/sdlc:$mode/SKILL.md"
+  echo "  updated: .claude/skills/sdlc-$mode/SKILL.md"
 done
 
 # Copy templates
