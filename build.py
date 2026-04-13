@@ -14,7 +14,7 @@ DIST = os.path.join(ROOT, "dist")
 ZIPS = {
     "sdlc-claude-code": [
         ("agents/",          "agents/*.md"),
-        ("skills/",          "skills/sdlc/**/*.md"),
+        ("skills/",          "skills/claude-code/**/*.md"),
         ("templates/",       "templates/*.md"),
         ("",                 "core-memory.md"),
         ("",                 "CLAUDE.md"),
@@ -25,7 +25,7 @@ ZIPS = {
     ],
     "sdlc-copilot": [
         ("",                 ".github/copilot-instructions.md"),
-        ("",                 "skills-copilot/**/*.md"),
+        ("",                 "skills/copilot/**/*.md"),
         ("",                 "hooks/copilot/install.sh"),
         ("",                 "hooks/copilot/install.ps1"),
     ],
