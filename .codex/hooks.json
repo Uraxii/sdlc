@@ -1,0 +1,3 @@
+{
+  "postInstall": "bash hooks/install.sh"
+}

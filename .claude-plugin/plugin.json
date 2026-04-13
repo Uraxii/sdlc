@@ -1,0 +1,22 @@
+{
+  "name": "sdlc",
+  "description": "Multi-agent SDLC pipeline for Claude Code — 9 pipeline modes, structured role system, relay-based handoffs.",
+  "author": {
+    "name": "Uraxii",
+    "url": "https://github.com/Uraxii"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.js",
+            "timeout": 3,
+            "statusMessage": "SDLC pipeline loaded."
+          }
+        ]
+      }
+    ]
+  }
+}

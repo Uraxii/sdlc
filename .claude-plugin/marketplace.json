@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "sdlc",
+  "description": "Multi-agent SDLC pipeline for Claude Code. Structured role system with 9 pipeline modes, parallel review gates, and relay-based handoffs.",
+  "owner": {
+    "name": "Uraxii",
+    "url": "https://github.com/Uraxii"
+  },
+  "plugins": [
+    {
+      "name": "sdlc",
+      "description": "9-mode pipeline. Roles: Architect, Developer, UX, Skeptic, Security, Tester, Friction Reviewer, Orchestrator.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
