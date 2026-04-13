@@ -1,23 +1,50 @@
-# SDLC universal installer (PowerShell)
-# Usage (from your project root):
-#   iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) } cursor"
+# SDLC installer (PowerShell)
 #
-# <ide>: claude-code | copilot | cursor | windsurf | cline | codex
+# Interactive:
+#   iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) }"
+#
+# Skip prompt with a flag:
+#   iex "& { $(irm https://...install.ps1) } -Cursor"
+#
+# Flags: -ClaudeCode  -Copilot  -Cursor  -Windsurf  -Cline  -Codex
 
-param([string]$IDE)
+param(
+  [switch]$ClaudeCode,
+  [switch]$Copilot,
+  [switch]$Cursor,
+  [switch]$Windsurf,
+  [switch]$Cline,
+  [switch]$Codex
+)
 
 $Repo    = "Uraxii/sdlc"
 $BaseUrl = "https://github.com/$Repo/releases/latest/download"
-$ValidIDEs = @("claude-code","copilot","cursor","windsurf","cline","codex")
-
-function Usage {
-  Write-Host "Usage: install.ps1 <ide>"
-  Write-Host "IDEs:  $($ValidIDEs -join ' | ')"
-  exit 1
+$IDEMap  = [ordered]@{
+  "claude-code" = $ClaudeCode
+  "copilot"     = $Copilot
+  "cursor"      = $Cursor
+  "windsurf"    = $Windsurf
+  "cline"       = $Cline
+  "codex"       = $Codex
 }
 
-if (-not $IDE) { Write-Host "Error: IDE argument required."; Usage }
-if ($IDE -notin $ValidIDEs) { Write-Host "Unknown IDE: $IDE"; Usage }
+$IDE = ""
+foreach ($key in $IDEMap.Keys) {
+  if ($IDEMap[$key]) { $IDE = $key; break }
+}
+
+if (-not $IDE) {
+  $Options = @($IDEMap.Keys)
+  Write-Host "Select your IDE:"
+  for ($i = 0; $i -lt $Options.Count; $i++) {
+    Write-Host "  $($i+1)) $($Options[$i])"
+  }
+  do {
+    $choice = Read-Host ">"
+    $idx = [int]$choice - 1
+  } while ($idx -lt 0 -or $idx -ge $Options.Count)
+  $IDE = $Options[$idx]
+}
 
 $Tmp = Join-Path $env:TEMP ("sdlc_" + [System.IO.Path]::GetRandomFileName())
 New-Item -ItemType Directory -Path $Tmp | Out-Null
@@ -30,7 +57,7 @@ try {
   Write-Host "Extracting..."
   Expand-Archive (Join-Path $Tmp $Zip) -DestinationPath (Join-Path $Tmp "sdlc")
 
-  Write-Host "Installing..."
+  Write-Host "Installing ($IDE)..."
   $Script = if ($IDE -eq "claude-code") {
     Join-Path $Tmp "sdlc\hooks\install.ps1"
   } else {
