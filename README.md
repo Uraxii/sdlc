@@ -13,28 +13,32 @@ Run from your project root.
 **Linux / macOS:**
 
 ```bash
-bash <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh | bash
 ```
 
 **Windows:**
 
 ```powershell
-iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) }"
+irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1 | iex
 ```
 
-The installer prompts you to select your IDE. Pass a flag to skip the prompt:
+The installer prompts you to pick your IDE. Pass a flag to skip the prompt:
 
-| IDE | Flag |
-|-----|------|
-| Claude Code | `--claude-code` / `-ClaudeCode` |
-| GitHub Copilot | `--copilot` / `-Copilot` |
-| Cursor | `--cursor` / `-Cursor` |
-| Windsurf | `--windsurf` / `-Windsurf` |
-| Cline | `--cline` / `-Cline` |
-| Codex / OpenAI | `--codex` / `-Codex` |
+| IDE | Bash | PowerShell |
+|-----|------|------------|
+| Claude Code | `--claude-code` | `-ClaudeCode` |
+| GitHub Copilot | `--copilot` | `-Copilot` |
+| Cursor | `--cursor` | `-Cursor` |
+| Windsurf | `--windsurf` | `-Windsurf` |
+| Cline | `--cline` | `-Cline` |
+| Codex / OpenAI | `--codex` | `-Codex` |
 
 ```bash
-bash <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh) --cursor
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh | bash -s -- --cursor
+```
+
+```powershell
+& ([scriptblock]::Create((irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1))) -Cursor
 ```
 
 **Claude Code via plugin manager** (alternative):
