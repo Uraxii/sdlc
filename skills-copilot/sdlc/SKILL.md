@@ -8,23 +8,21 @@ description: >
 
 # SDLC Pipeline
 
-Structured multi-role pipeline for AI-assisted development. Replaces ad-hoc sessions with disciplined workflows: role-based agents, 10 pipeline modes, parallel review gates.
+Structured multi-role pipeline for AI-assisted development. Replaces ad-hoc sessions with disciplined workflows: role-based agents, 8 pipeline modes, parallel review gates.
 
 ## Starting a pipeline
 
 1. Ask for task description if not provided.
 2. Select mode — two questions:
-   - Does this touch UI? (layout, components, visual behavior)
    - New feature or fix/refactor?
+   - Does this touch UI? (layout, components, visual behavior) — UX Designer runs if yes.
 
 3. State: `**[Orchestrator]** Mode: sdlc:<mode> — <one sentence why>.` then proceed.
 
 | Mode | When |
 |------|------|
-| `full-ui` | New feature + UI changes |
-| `full-logic` | New feature, no UI |
-| `lightweight-ui` | Bug fix or small change + UI |
-| `lightweight-logic` | Bug fix or small change, no UI |
+| `full` | New feature (UX Designer runs if UI changes) |
+| `lightweight` | Bug fix or small change (UX Designer runs if UI changes) |
 | `refactor` | Behavior-preserving restructure only |
 | `hotfix` | Production incident — time-critical |
 | `dependency-bump` | Library version update only |
@@ -52,25 +50,17 @@ Prefix each response `**[RoleName]**`.
 
 ## Pipeline sequences
 
-### `full-ui`
+### `full`
 ```
-Architect → UX Designer → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
+Architect → [UX Designer]* → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
 ```
+`*` UX Designer mandatory when task touches UI.
 
-### `full-logic`
+### `lightweight`
 ```
-Architect → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
+[UX Designer]* → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
 ```
-
-### `lightweight-ui`
-```
-UX Designer → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
-```
-
-### `lightweight-logic`
-```
-Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
-```
+`*` UX Designer mandatory when task touches UI. No Architect. No Skeptic design review.
 
 ### `refactor`
 ```
@@ -103,7 +93,7 @@ Skeptic
 ```
 Skeptic (concept) → Developer → Tester (smoke)
 ```
-**NOT SHIPPABLE.** Needs `full-ui` or `full-logic` before merge to main.
+**NOT SHIPPABLE.** Needs `full` before merge to main.
 
 ---
 

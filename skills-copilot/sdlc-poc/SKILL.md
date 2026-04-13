@@ -9,7 +9,7 @@ description: >
 
 Fast proof-of-concept. **NOT SHIPPABLE.**
 
-Requires `sdlc-full-logic` or `sdlc-full-ui` before merge to main. Tester gaps become the starting plan for the full run.
+Requires `sdlc-full` before merge to main. Tester gaps become the starting plan for the full run.
 
 ## Sequence
 ```
