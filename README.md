@@ -2,7 +2,7 @@
 
 Structured multi-role pipeline for AI-assisted development. Replaces ad-hoc AI sessions with disciplined workflows: role-based agents, 10 pipeline modes, parallel review gates, and persistent memory across sessions.
 
-Supports: **Claude Code** · **GitHub Copilot** · **Cursor** · **Windsurf** · **Cline** · **Codex**
+Supports: **Claude Code** · **GitHub Copilot CLI**
 
 ---
 
@@ -22,23 +22,19 @@ curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh | 
 irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1 | iex
 ```
 
-The installer prompts you to pick your IDE. Pass a flag to skip the prompt:
+The installer prompts you to pick your tool. Pass a flag to skip the prompt:
 
-| IDE | Bash | PowerShell |
-|-----|------|------------|
+| Tool | Bash | PowerShell |
+|------|------|------------|
 | Claude Code | `--claude-code` | `-ClaudeCode` |
-| GitHub Copilot | `--copilot` | `-Copilot` |
-| Cursor | `--cursor` | `-Cursor` |
-| Windsurf | `--windsurf` | `-Windsurf` |
-| Cline | `--cline` | `-Cline` |
-| Codex / OpenAI | `--codex` | `-Codex` |
+| GitHub Copilot CLI | `--copilot` | `-Copilot` |
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh | bash -s -- --cursor
+curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh | bash -s -- --copilot
 ```
 
 ```powershell
-& ([scriptblock]::Create((irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1))) -Cursor
+& ([scriptblock]::Create((irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1))) -Copilot
 ```
 
 **Claude Code via plugin manager** (alternative):
@@ -80,14 +76,17 @@ After install, configure the agents for your project:
 
 `/sdlc` asks two questions to pick the right mode: does this touch UI, and is it new work or a fix?
 
-### Other IDEs
+### GitHub Copilot CLI
 
-Reference modes by name in chat:
+After install, the `sdlc` skill is available at `.github/skills/sdlc/SKILL.md`. Start a session and invoke it:
 
 ```
+/sdlc
 Use sdlc:full-ui for this task.
 Use sdlc:hotfix — production is down.
 ```
+
+`.github/copilot-instructions.md` is also installed as always-on repo context.
 
 ---
 

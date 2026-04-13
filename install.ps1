@@ -4,17 +4,13 @@
 #   iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) }"
 #
 # Skip prompt with a flag:
-#   iex "& { $(irm https://...install.ps1) } -Cursor"
+#   iex "& { $(irm https://...install.ps1) } -Copilot"
 #
-# Flags: -ClaudeCode  -Copilot  -Cursor  -Windsurf  -Cline  -Codex
+# Flags: -ClaudeCode  -Copilot
 
 param(
   [switch]$ClaudeCode,
-  [switch]$Copilot,
-  [switch]$Cursor,
-  [switch]$Windsurf,
-  [switch]$Cline,
-  [switch]$Codex
+  [switch]$Copilot
 )
 
 $Repo    = "Uraxii/sdlc"
@@ -22,10 +18,6 @@ $BaseUrl = "https://github.com/$Repo/releases/latest/download"
 $IDEMap  = [ordered]@{
   "claude-code" = $ClaudeCode
   "copilot"     = $Copilot
-  "cursor"      = $Cursor
-  "windsurf"    = $Windsurf
-  "cline"       = $Cline
-  "codex"       = $Codex
 }
 
 $IDE = ""
@@ -61,7 +53,7 @@ try {
   $Script = if ($IDE -eq "claude-code") {
     Join-Path $Tmp "sdlc\hooks\install.ps1"
   } else {
-    Join-Path $Tmp "sdlc\install.ps1"
+    Join-Path $Tmp "sdlc\hooks\$IDE\install.ps1"
   }
   & $Script
 } finally {
