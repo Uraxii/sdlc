@@ -21,40 +21,46 @@ claude plugin install github.com/Uraxii/sdlc && bash "$CLAUDE_PLUGIN_ROOT/hooks/
 **Without plugin manager:**
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-claude-code.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/hooks/install.sh && rm -rf _sdlc _sdlc.zip
+bash -s -- claude-code < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
 ### GitHub Copilot
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-copilot.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
+bash -s -- copilot < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
 ### Cursor
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-cursor.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
+bash -s -- cursor < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
 ### Windsurf
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-windsurf.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
+bash -s -- windsurf < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
 ### Cline
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-cline.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
+bash -s -- cline < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
 ### Codex / OpenAI
 
 ```bash
-curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/sdlc-codex.zip -o _sdlc.zip && unzip -q _sdlc.zip -d _sdlc && bash _sdlc/install.sh && rm -rf _sdlc _sdlc.zip
+bash -s -- codex < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
-**Windows:** each zip includes an `install.ps1`. Download the zip, extract it, and run the `.ps1` instead of the `.sh`.
+**Windows:**
+
+```powershell
+iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) } cursor"
+```
+
+Replace `cursor` with your IDE: `claude-code` · `copilot` · `windsurf` · `cline` · `codex`
 
 ---
 
