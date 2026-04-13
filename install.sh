@@ -67,5 +67,5 @@ echo "Installing ($IDE)..."
 if [ "$IDE" = "claude-code" ]; then
   bash "$TMP/sdlc/hooks/install.sh"
 else
-  bash "$TMP/sdlc/install.sh"
+  bash "$TMP/sdlc/hooks/$IDE/install.sh"
 fi
