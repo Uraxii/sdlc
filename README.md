@@ -8,59 +8,40 @@ Supports: **Claude Code** · **GitHub Copilot** · **Cursor** · **Windsurf** ·
 
 ## Installation
 
-Run all commands from your project root.
+Run from your project root.
 
-### Claude Code
-
-**Via plugin manager:**
+**Linux / macOS:**
 
 ```bash
-claude plugin install github.com/Uraxii/sdlc && bash "$CLAUDE_PLUGIN_ROOT/hooks/install.sh"
-```
-
-**Without plugin manager:**
-
-```bash
-bash -s -- claude-code < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
-```
-
-### GitHub Copilot
-
-```bash
-bash -s -- copilot < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
-```
-
-### Cursor
-
-```bash
-bash -s -- cursor < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
-```
-
-### Windsurf
-
-```bash
-bash -s -- windsurf < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
-```
-
-### Cline
-
-```bash
-bash -s -- cline < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
-```
-
-### Codex / OpenAI
-
-```bash
-bash -s -- codex < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
+bash <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
 ```
 
 **Windows:**
 
 ```powershell
-iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) } cursor"
+iex "& { $(irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1) }"
 ```
 
-Replace `cursor` with your IDE: `claude-code` · `copilot` · `windsurf` · `cline` · `codex`
+The installer prompts you to select your IDE. Pass a flag to skip the prompt:
+
+| IDE | Flag |
+|-----|------|
+| Claude Code | `--claude-code` / `-ClaudeCode` |
+| GitHub Copilot | `--copilot` / `-Copilot` |
+| Cursor | `--cursor` / `-Cursor` |
+| Windsurf | `--windsurf` / `-Windsurf` |
+| Cline | `--cline` / `-Cline` |
+| Codex / OpenAI | `--codex` / `-Codex` |
+
+```bash
+bash <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh) --cursor
+```
+
+**Claude Code via plugin manager** (alternative):
+
+```bash
+claude plugin install github.com/Uraxii/sdlc && bash "$CLAUDE_PLUGIN_ROOT/hooks/install.sh"
+```
 
 ---
 

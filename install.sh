@@ -1,28 +1,50 @@
 #!/usr/bin/env bash
-# SDLC universal installer
-# Usage (from your project root):
-#   bash -s -- <ide> < <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
+# SDLC installer
 #
-# <ide>: claude-code | copilot | cursor | windsurf | cline | codex
+# Interactive:
+#   bash <(curl -fsSL https://github.com/Uraxii/sdlc/releases/latest/download/install.sh)
+#
+# Skip prompt with a flag:
+#   bash <(curl -fsSL https://...install.sh) --cursor
+#
+# Flags: --claude-code  --copilot  --cursor  --windsurf  --cline  --codex
 
 set -e
 
 REPO="Uraxii/sdlc"
 BASE_URL="https://github.com/$REPO/releases/latest/download"
-VALID_IDES=(claude-code copilot cursor windsurf cline codex)
+IDES=(claude-code copilot cursor windsurf cline codex)
 
-usage() {
-  echo "Usage: bash install.sh <ide>"
-  echo "IDEs:  ${VALID_IDES[*]}"
-  exit 1
-}
+IDE=""
+for arg in "$@"; do
+  case "$arg" in
+    --claude-code) IDE="claude-code" ;;
+    --copilot)     IDE="copilot"     ;;
+    --cursor)      IDE="cursor"      ;;
+    --windsurf)    IDE="windsurf"    ;;
+    --cline)       IDE="cline"       ;;
+    --codex)       IDE="codex"       ;;
+    *) echo "Unknown flag: $arg"; echo "Flags: --claude-code --copilot --cursor --windsurf --cline --codex"; exit 1 ;;
+  esac
+done
 
-IDE="${1:-}"
-[ -z "$IDE" ] && { echo "Error: IDE argument required."; usage; }
-
-valid=false
-for i in "${VALID_IDES[@]}"; do [ "$i" = "$IDE" ] && valid=true && break; done
-$valid || { echo "Unknown IDE: $IDE"; usage; }
+if [ -z "$IDE" ]; then
+  echo "Select your IDE:"
+  i=1
+  for ide in "${IDES[@]}"; do
+    echo "  $i) $ide"
+    ((i++))
+  done
+  while true; do
+    printf "> "
+    read -r choice </dev/tty
+    if [[ "$choice" =~ ^[1-6]$ ]]; then
+      IDE="${IDES[$((choice-1))]}"
+      break
+    fi
+    echo "Enter a number 1–6."
+  done
+fi
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -34,7 +56,7 @@ curl -fsSL "$BASE_URL/$ZIP" -o "$TMP/$ZIP"
 echo "Extracting..."
 unzip -q "$TMP/$ZIP" -d "$TMP/sdlc"
 
-echo "Installing..."
+echo "Installing ($IDE)..."
 if [ "$IDE" = "claude-code" ]; then
   bash "$TMP/sdlc/hooks/install.sh"
 else
