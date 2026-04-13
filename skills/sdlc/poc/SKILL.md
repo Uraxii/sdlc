@@ -7,7 +7,7 @@ description: POC mode — build + test features fast and cheap. NOT shippable. R
 
 Fast, cheap feature exploration. No prod constraints — no Architect, no Security Auditor, no Friction Reviewer.
 
-**Hard constraint:** POC never ships. Needs `sdlc:full-ui` or `sdlc:full-logic` before merge to main.
+**Hard constraint:** POC never ships. Needs `sdlc:full` before merge to main.
 
 ## Sequence
 ```
@@ -40,6 +40,6 @@ Skeptic (concept) → Developer → Tester (smoke)
    - Core scenario work? Yes/No.
    - Obvious regressions in adjacent paths?
    - List coverage gaps — input for full pipeline.
-   - Conclude relay: `⚠️ POC complete — NOT SHIPPABLE. Promote via sdlc:full-[ui|logic] before shipping.`
+   - Conclude relay: `⚠️ POC complete — NOT SHIPPABLE. Promote via sdlc:full before shipping.`
 
-> **To promote:** run `sdlc:full-ui` or `sdlc:full-logic`. Tester coverage gaps = starting test plan.
+> **To promote:** run `sdlc:full`. Tester coverage gaps = starting test plan.
