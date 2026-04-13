@@ -9,7 +9,7 @@ PROJECT_ROOT="$(pwd)"
 
 echo "SDLC (Copilot) install: $PLUGIN_ROOT → $PROJECT_ROOT"
 
-mkdir -p "$PROJECT_ROOT/.github"
+mkdir -p "$PROJECT_ROOT/.github" "$PROJECT_ROOT/.github/copilot"
 
 dest="$PROJECT_ROOT/.github/copilot-instructions.md"
 if [ -f "$dest" ]; then
@@ -19,5 +19,13 @@ else
   echo "  copied: .github/copilot-instructions.md"
 fi
 
+dest="$PROJECT_ROOT/.github/copilot/sdlc.prompt.md"
+if [ -f "$dest" ]; then
+  echo "  skip (exists): .github/copilot/sdlc.prompt.md"
+else
+  cp "$PLUGIN_ROOT/.github/copilot/sdlc.prompt.md" "$dest"
+  echo "  copied: .github/copilot/sdlc.prompt.md"
+fi
+
 echo ""
-echo "Done. Copilot will pick up .github/copilot-instructions.md automatically."
+echo "Done. Copilot will pick up .github/copilot-instructions.md and .github/copilot/sdlc.prompt.md automatically."
