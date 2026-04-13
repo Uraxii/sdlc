@@ -54,7 +54,14 @@ echo "Downloading $ZIP..."
 curl -fsSL "$BASE_URL/$ZIP" -o "$TMP/$ZIP"
 
 echo "Extracting..."
-unzip -q "$TMP/$ZIP" -d "$TMP/sdlc"
+if command -v unzip >/dev/null 2>&1; then
+  unzip -q "$TMP/$ZIP" -d "$TMP/sdlc"
+elif command -v python3 >/dev/null 2>&1; then
+  python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$TMP/$ZIP" "$TMP/sdlc"
+else
+  echo "ERROR: neither 'unzip' nor 'python3' found. Install one and re-run."
+  exit 1
+fi
 
 echo "Installing ($IDE)..."
 if [ "$IDE" = "claude-code" ]; then
