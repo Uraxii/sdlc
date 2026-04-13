@@ -25,31 +25,9 @@ ZIPS = {
     ],
     "sdlc-copilot": [
         ("",                 ".github/copilot-instructions.md"),
-        ("",                 ".github/copilot/sdlc.prompt.md"),
+        ("",                 "skills-copilot/sdlc/SKILL.md"),
         ("",                 "hooks/copilot/install.sh"),
         ("",                 "hooks/copilot/install.ps1"),
-    ],
-    "sdlc-cursor": [
-        ("",                 ".cursor/rules/sdlc.mdc"),
-        ("",                 ".cursor/skills/sdlc/SKILL.md"),
-        ("",                 "hooks/cursor/install.sh"),
-        ("",                 "hooks/cursor/install.ps1"),
-    ],
-    "sdlc-windsurf": [
-        ("",                 ".windsurf/rules/sdlc.md"),
-        ("",                 ".windsurf/skills/sdlc/SKILL.md"),
-        ("",                 "hooks/windsurf/install.sh"),
-        ("",                 "hooks/windsurf/install.ps1"),
-    ],
-    "sdlc-cline": [
-        ("",                 ".clinerules/sdlc.md"),
-        ("",                 "hooks/cline/install.sh"),
-        ("",                 "hooks/cline/install.ps1"),
-    ],
-    "sdlc-codex": [
-        ("",                 "AGENTS.md"),
-        ("",                 "hooks/codex/install.sh"),
-        ("",                 "hooks/codex/install.ps1"),
     ],
 }
 
