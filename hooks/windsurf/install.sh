@@ -4,7 +4,7 @@
 
 set -e
 
-PLUGIN_ROOT="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
 PROJECT_ROOT="$(pwd)"
 
 echo "SDLC (Windsurf) install: $PLUGIN_ROOT → $PROJECT_ROOT"
