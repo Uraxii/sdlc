@@ -1,17 +1,17 @@
 # SDLC Plugin
 
-Project-agnostic SDLC plugin. Structured multi-role pipeline, 9 mode variants, parallel review gates, relay-based handoff.
+A project-agnostic software development lifecycle plugin. Provides a structured multi-role pipeline with 9 mode variants, parallel review gates, and a relay-based handoff system.
 
 Supports: **Claude Code** · **GitHub Copilot** · **Cursor** · **Windsurf** · **Cline** · **Codex**
 
 ## What It Does
 
-Replaces ad-hoc AI sessions with disciplined pipeline:
-- **Role system**: Architect, Developer, UX Designer, Skeptic, Security Auditor, Tester, Friction Reviewer, Orchestrator, more
-- **9 pipeline modes**: Right-sized for each change type (feature, bugfix, refactor, hotfix, etc.)
+Replaces ad-hoc AI coding sessions with a disciplined pipeline:
+- **Role system**: Architect, Developer, UX Designer, Skeptic, Security Auditor, Tester, Friction Reviewer, Orchestrator, and more
+- **9 pipeline modes**: Right-sized process for every change type (new feature, bug fix, refactor, hotfix, etc.)
 - **Parallel gates**: Skeptic + Security Auditor run concurrently post-implementation
-- **Relay files**: Structured handoff docs — each role reads upstream context first
-- **Memory system**: Roles accumulate project lessons across sessions (Claude Code)
+- **Relay files**: Structured handoff docs so every role reads upstream context before starting
+- **Memory system**: Roles accumulate project-specific lessons across sessions (Claude Code)
 
 ## Installation
 
