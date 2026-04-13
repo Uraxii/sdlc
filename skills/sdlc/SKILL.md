@@ -1,8 +1,8 @@
 ---
 name: sdlc
 description: >
-  Start a pipeline run. Orchestrator selects the right pipeline from: full-ui, full-logic,
-  lightweight-ui, lightweight-logic, refactor, hotfix, dependency-bump, config-data, docs-only, poc.
+  Start a pipeline run. Orchestrator selects the right pipeline from: full, lightweight,
+  refactor, hotfix, dependency-bump, config-data, docs-only, poc.
 ---
 
 # SDLC Initialization
