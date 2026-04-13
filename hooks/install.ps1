@@ -43,6 +43,15 @@ foreach ($a in $agents) {
   }
 }
 
+# Copy skills
+$skillsDest = Join-Path $ProjectRoot ".claude\skills"
+if (-not (Test-Path $skillsDest)) { New-Item -ItemType Directory -Path $skillsDest | Out-Null }
+$skillsSrc = Join-Path $PluginRoot "skills\sdlc"
+if (Test-Path $skillsSrc) {
+  Copy-Item $skillsSrc (Join-Path $skillsDest "sdlc") -Recurse -Force
+  Write-Host "  copied: .claude\skills\sdlc"
+}
+
 # Copy templates
 Copy-Item "$PluginRoot\templates\relay-template.md" (Join-Path $ProjectRoot "templates\relay-template.md") -Force
 Write-Host "  copied: templates\relay-template.md"

@@ -36,6 +36,13 @@ for agent in architect developer skeptic tester security-auditor ux-designer \
   fi
 done
 
+# Copy skills
+mkdir -p "$PROJECT_ROOT/.claude/skills"
+if [ -d "$PLUGIN_ROOT/skills/sdlc" ]; then
+  cp -r "$PLUGIN_ROOT/skills/sdlc" "$PROJECT_ROOT/.claude/skills/sdlc"
+  echo "  copied: .claude/skills/sdlc"
+fi
+
 # Copy templates
 cp "$PLUGIN_ROOT/templates/relay-template.md" "$PROJECT_ROOT/templates/relay-template.md"
 echo "  copied: templates/relay-template.md"
