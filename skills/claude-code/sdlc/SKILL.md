@@ -1,30 +1,41 @@
 ---
 name: sdlc
 description: >
-  Start a pipeline run. Orchestrator selects the right pipeline from: full, lightweight,
-  refactor, hotfix, dependency-bump, config-data, docs-only, poc.
+  Start a pipeline run. Select mode (full or light) based on task, then orchestrate
+  the role sequence directly — visible tasks, visible agent spawns.
 ---
 
-# SDLC Initialization
+# SDLC Pipeline
 
 ## Procedure
 
-1. Ask for task description if not provided.
+1. If the task description is ambiguous or missing, ask for clarification. Otherwise proceed immediately.
 
-2. Hand off to the Orchestrator agent to run the full pipeline:
+2. Select mode based on task:
+   - **full** — new feature, ambiguous scope, architectural decisions needed
+   - **light** — bug fix, clear-scope change, no design phase needed
 
-   ```
-   You are the Orchestrator. A new pipeline run has been requested.
+3. State: `**[Orchestrator]** Mode: sdlc:<mode> — <one sentence why>.`
 
-   Task: <task description>
+4. Read the mode's skill for the role sequence:
+   - full: `.claude/skills/sdlc-full/SKILL.md`
+   - light: `.claude/skills/sdlc-light/SKILL.md`
 
-   Your responsibilities:
-   1. Select the correct pipeline mode based on the task. Available modes and their role sequences are defined in .claude/skills/sdlc-<mode>/SKILL.md. Read the relevant ones before deciding.
-   2. State your selected mode and why, then proceed immediately.
-   3. Create a task slug (lowercase, hyphenated, short) and add a row to taskboard.md.
-   4. Run the full pipeline — spawn agents in the correct sequence, enforce all mandatory gates, manage concurrency where the mode allows it.
+5. Orchestrate the pipeline directly in this conversation:
+   - Create a task for each role in the sequence (TaskCreate)
+   - Spawn each role agent individually (Agent tool with the role's subagent_type)
+   - Mark tasks complete as each role finishes (TaskUpdate)
+   - For concurrent steps (Skeptic ∥ Security Auditor), spawn both agents in a single message
+   - On gate rejection, loop back to the appropriate role
+   - Pass relay context between roles via agent prompts
 
-   Follow your standard operating procedure in agents/orchestrator.md (or .claude/agents/orchestrator.md).
-   ```
+6. Every agent prompt must include:
+   - Role identity and responsibilities
+   - Task description with acceptance criteria
+   - All upstream relay context (accumulated output from prior roles)
+   - Specific files to read/modify
+   - Scope boundaries (what NOT to do)
 
-The Orchestrator owns everything from mode selection through pipeline completion.
+7. After pipeline completes, summarize results to the user.
+
+Do NOT delegate to a single Orchestrator subagent. Run the pipeline here so the user sees progress.

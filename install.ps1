@@ -6,11 +6,11 @@
 # Skip prompt with a flag:
 #   iex "& { $(irm https://...install.ps1) } -Copilot"
 #
-# Flags: -ClaudeCode  -Copilot
+# Flags: --claude-code  --copilot
 
 param(
-  [switch]$ClaudeCode,
-  [switch]$Copilot
+  [Alias("claude-code")][switch]$ClaudeCode,
+  [Alias("copilot")][switch]$Copilot
 )
 
 $Repo    = "Uraxii/sdlc"
@@ -58,4 +58,15 @@ try {
   & $Script
 } finally {
   Remove-Item -Recurse -Force $Tmp
+}
+
+$ScriptPath = $MyInvocation.MyCommand.Path
+if ($ScriptPath -and (Test-Path $ScriptPath)) {
+  $ans = Read-Host "Delete install script ($ScriptPath)? [y/N]"
+  if ($ans -match '^[yY]') {
+    Remove-Item $ScriptPath
+    Write-Host "Deleted."
+  } else {
+    Write-Host "Kept."
+  }
 }

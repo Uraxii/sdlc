@@ -1,6 +1,6 @@
 # SDLC Relay: {task-slug}
 
-> Created: {date} | Mode: {full-ui|full-logic|lightweight-ui|lightweight-logic|refactor|hotfix|dependency-bump|config-data|docs-only|poc} | Status: {In Progress|Complete}
+> Created: {date} | Mode: {full|light} | Status: {In Progress|Complete}
 
 **Conventions:**
 - Each role appends when done. Skip sections not in your mode.

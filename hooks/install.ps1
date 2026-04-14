@@ -30,7 +30,7 @@ Get-ChildItem -Path "$PluginRoot\agents\*.md" | Where-Object { $_.Name -notlike 
 
 # Create empty memory files
 $agents = @('architect','developer','skeptic','tester','security-auditor',
-            'ux-designer','friction-reviewer','orchestrator','progenitor','monitor')
+            'ux-designer','friction-reviewer','orchestrator','progenitor','monitor','planner')
 foreach ($a in $agents) {
   $mem = Join-Path $ProjectRoot ".claude\agents\memory\$a.md"
   if (-not (Test-Path $mem)) {
@@ -79,9 +79,4 @@ if (-not (Test-Path $tb)) {
 } else { Write-Host "  skip (exists): taskboard.md" }
 
 Write-Host ""
-Write-Host "Done. Next steps:"
-Write-Host "  1. Edit .claude\agents\ux-designer.md -- fill in design token table"
-Write-Host "  2. Edit .claude\agents\CLAUDE.md -- update <project>/agent-memory.md path"
-Write-Host "  3. Edit .claude\agents\developer.md -- update version file reference"
-Write-Host "  4. Create <project>/agent-memory.md with project domain knowledge"
-Write-Host "  5. Use /sdlc to start a pipeline run"
+Write-Host "Done. Use /sdlc to start a pipeline run."

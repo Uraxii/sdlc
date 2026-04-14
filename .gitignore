@@ -7,3 +7,11 @@ agents/*.md
 !agents/CLAUDE.md
 !agents/agent-memory.md
 .env
+
+# Local state — per-install, not shared
+.claude/agents/memory/
+agent-memory.md
+core-memory.md
+core-memory.original.md
+taskboard.md
+sdlc/*/relay.md
