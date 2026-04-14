@@ -38,10 +38,12 @@ ZIPS = {
         (".claude-plugin/",  ".claude-plugin/plugin.json",              ROOT),
     ],
     "sdlc-copilot": [
-        ("",  ".github/copilot-instructions.md",              ROOT),
-        ("",  "dist/staging/extensions/sdlc/extension.mjs",   STAGING),
-        ("",  "hooks/copilot/install.sh",                     ROOT),
-        ("",  "hooks/copilot/install.ps1",                    ROOT),
+        ("",             ".github/copilot-instructions.md",              ROOT),
+        ("",             "dist/staging/extensions/sdlc/extension.mjs",   STAGING),
+        ("",             "dist/staging/core-memory.md",                  STAGING),
+        ("templates/",   "dist/staging/templates/*.md",                  STAGING),
+        ("",             "hooks/copilot/install.sh",                     ROOT),
+        ("",             "hooks/copilot/install.ps1",                    ROOT),
     ],
 }
 
