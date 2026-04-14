@@ -179,8 +179,32 @@ async function runPipeline(session, mode, task, hasUI) {
   await session.log("[SDLC] Pipeline complete.");
 }
 
-// Join session with tools + hooks
+// Join session with slash commands, tools + hooks
 const session = await joinSession({
+  slashCommands: [
+    {
+      name: "sdlc",
+      description:
+        "Start a structured SDLC pipeline run. Provide a task description after the command.",
+      action: async (sess, params) => {
+        const task = params?.args?.trim() || "";
+        if (!task) {
+          await sess.send({
+            prompt:
+              "The user invoked /sdlc without a task description. Ask them what they want to build or fix, " +
+              "then call the sdlc_pipeline tool with the appropriate mode, task, and hasUI.",
+          });
+          return;
+        }
+        await sess.send({
+          prompt:
+            `The user wants an SDLC pipeline run for: "${task}". ` +
+            "Determine the appropriate mode (full for new features, light for bug fixes/clear-scope changes) " +
+            "and whether it involves UI changes, then call the sdlc_pipeline tool.",
+        });
+      },
+    },
+  ],
   tools: [
     {
       name: "sdlc_pipeline",
@@ -229,14 +253,13 @@ const session = await joinSession({
   hooks: {
     onUserPromptSubmitted: async (input) => {
       if (
-        /\bsdlc\b|(?:start|run|execute)\s+(?:the\s+)?(?:sdlc\s+)?pipeline/i.test(
+        /\/sdlc\b|(?:start|run|execute)\s+(?:the\s+)?sdlc\s+pipeline/i.test(
           input.prompt
         )
       ) {
         return {
           additionalContext:
-            "The user wants an SDLC pipeline run. Call the sdlc_pipeline tool with mode, task, and hasUI. " +
-            "Extract the task description from their message.",
+            "The user wants an SDLC pipeline run. Call the sdlc_pipeline tool with mode, task, and hasUI.",
         };
       }
       return {};
@@ -251,9 +274,7 @@ const session = await joinSession({
       return {};
     },
     onSessionStart: async () => {
-      await session.log(
-        "[SDLC] Extension loaded. Say 'start sdlc pipeline' or describe a task to trigger the pipeline."
-      );
+      await session.log("[SDLC] Extension loaded.");
       return {};
     },
   },
