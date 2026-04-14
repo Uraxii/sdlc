@@ -630,3 +630,112 @@ def test_zips_skills_reference_staging():
                     f"ZIPS[{zip_name!r}] skill pattern {pattern!r} "
                     f"does not reference dist/staging/ — skills must be compressed"
                 )
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — cmd_zip copies install.sh and install.ps1 to dist/
+# ---------------------------------------------------------------------------
+
+
+def test_cmd_zip_copies_install_scripts(tmp_path, monkeypatch):
+    """cmd_zip copies install.sh and install.ps1 from ROOT to dist/."""
+    # Set up fake staging with a dummy agent so the guard passes
+    fake_staging = tmp_path / "dist" / "staging"
+    fake_agents = fake_staging / "agents"
+    fake_agents.mkdir(parents=True)
+    (fake_agents / "dummy.md").write_text("# agent")
+
+    fake_dist = tmp_path / "dist"
+
+    # Create fake install scripts at fake ROOT
+    fake_root = tmp_path
+    (fake_root / "install.sh").write_text("#!/bin/bash\necho install")
+    (fake_root / "install.ps1").write_text("Write-Host install")
+
+    monkeypatch.setattr(build, "ROOT", str(fake_root))
+    monkeypatch.setattr(build, "DIST", str(fake_dist))
+    monkeypatch.setattr(build, "STAGING", str(fake_staging))
+    # Use empty ZIPS so we skip actual zip creation and only test install copy
+    monkeypatch.setattr(build, "ZIPS", {})
+
+    build.cmd_zip()
+
+    assert (fake_dist / "install.sh").exists(), "install.sh not copied to dist/"
+    assert (fake_dist / "install.ps1").exists(), "install.ps1 not copied to dist/"
+    # Verify content was actually copied
+    assert "echo install" in (fake_dist / "install.sh").read_text()
+    assert "Write-Host install" in (fake_dist / "install.ps1").read_text()
+
+
+def test_cmd_zip_raises_on_missing_install_sh(tmp_path, monkeypatch):
+    """cmd_zip raises BuildError when install.sh is missing from ROOT."""
+    fake_staging = tmp_path / "dist" / "staging"
+    fake_agents = fake_staging / "agents"
+    fake_agents.mkdir(parents=True)
+    (fake_agents / "dummy.md").write_text("# agent")
+
+    fake_dist = tmp_path / "dist"
+    fake_root = tmp_path
+
+    # Only create install.ps1, NOT install.sh
+    (fake_root / "install.ps1").write_text("Write-Host install")
+
+    monkeypatch.setattr(build, "ROOT", str(fake_root))
+    monkeypatch.setattr(build, "DIST", str(fake_dist))
+    monkeypatch.setattr(build, "STAGING", str(fake_staging))
+    monkeypatch.setattr(build, "ZIPS", {})
+
+    with pytest.raises(build.BuildError) as exc_info:
+        build.cmd_zip()
+
+    msg = str(exc_info.value)
+    assert "install.sh" in msg, f"Error should mention install.sh, got: {msg!r}"
+
+
+def test_cmd_zip_raises_on_missing_install_ps1(tmp_path, monkeypatch):
+    """cmd_zip raises BuildError when install.ps1 is missing from ROOT."""
+    fake_staging = tmp_path / "dist" / "staging"
+    fake_agents = fake_staging / "agents"
+    fake_agents.mkdir(parents=True)
+    (fake_agents / "dummy.md").write_text("# agent")
+
+    fake_dist = tmp_path / "dist"
+    fake_root = tmp_path
+
+    # Only create install.sh, NOT install.ps1
+    (fake_root / "install.sh").write_text("#!/bin/bash\necho install")
+
+    monkeypatch.setattr(build, "ROOT", str(fake_root))
+    monkeypatch.setattr(build, "DIST", str(fake_dist))
+    monkeypatch.setattr(build, "STAGING", str(fake_staging))
+    monkeypatch.setattr(build, "ZIPS", {})
+
+    with pytest.raises(build.BuildError) as exc_info:
+        build.cmd_zip()
+
+    msg = str(exc_info.value)
+    assert "install.ps1" in msg, f"Error should mention install.ps1, got: {msg!r}"
+
+
+def test_cmd_zip_raises_on_both_missing(tmp_path, monkeypatch):
+    """cmd_zip raises BuildError when both install scripts are missing (fails on first)."""
+    fake_staging = tmp_path / "dist" / "staging"
+    fake_agents = fake_staging / "agents"
+    fake_agents.mkdir(parents=True)
+    (fake_agents / "dummy.md").write_text("# agent")
+
+    fake_dist = tmp_path / "dist"
+    fake_root = tmp_path
+    # No install scripts at all
+
+    monkeypatch.setattr(build, "ROOT", str(fake_root))
+    monkeypatch.setattr(build, "DIST", str(fake_dist))
+    monkeypatch.setattr(build, "STAGING", str(fake_staging))
+    monkeypatch.setattr(build, "ZIPS", {})
+
+    with pytest.raises(build.BuildError) as exc_info:
+        build.cmd_zip()
+
+    msg = str(exc_info.value)
+    # Should fail on install.sh first (iterated first)
+    assert "install.sh" in msg, f"Error should mention install.sh, got: {msg!r}"

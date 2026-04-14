@@ -19,20 +19,6 @@ else
   echo "  copied: .github/copilot-instructions.md"
 fi
 
-for skill_dir in "$PLUGIN_ROOT/skills/copilot/"/*/; do
-  [ -f "${skill_dir}SKILL.md" ] || continue
-  name=$(basename "$skill_dir")
-  dest_dir="$PROJECT_ROOT/.github/skills/$name"
-  mkdir -p "$dest_dir"
-  dest="$dest_dir/SKILL.md"
-  if [ -f "$dest" ]; then
-    echo "  skip (exists): .github/skills/$name/SKILL.md"
-  else
-    cp "${skill_dir}SKILL.md" "$dest"
-    echo "  copied: .github/skills/$name/SKILL.md"
-  fi
-done
-
 mkdir -p "$PROJECT_ROOT/.github/extensions/sdlc"
 dest="$PROJECT_ROOT/.github/extensions/sdlc/extension.mjs"
 if [ -f "$dest" ]; then
