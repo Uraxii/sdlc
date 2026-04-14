@@ -9,9 +9,29 @@ $ProjectRoot = Get-Location
 Write-Host "SDLC (Copilot) install: $PluginRoot -> $ProjectRoot"
 
 # Create directories
-foreach ($d in @('.github\extensions\sdlc', 'sdlc', 'templates')) {
+foreach ($d in @('.github\agents', '.github\skills', 'sdlc', 'templates')) {
   $p = Join-Path $ProjectRoot $d
   if (-not (Test-Path $p)) { New-Item -ItemType Directory -Path $p | Out-Null }
+}
+
+# Copy agents (always overwrite — plugin-managed)
+$agentDir = Join-Path $PluginRoot 'agents\copilot'
+foreach ($agent in (Get-ChildItem -Path $agentDir -Filter '*.agent.md' -ErrorAction SilentlyContinue)) {
+  Copy-Item $agent.FullName (Join-Path $ProjectRoot ".github\agents\$($agent.Name)") -Force
+  Write-Host "  updated: .github\agents\$($agent.Name)"
+}
+
+# Copy skills (always overwrite — plugin-managed)
+$skillsDir = Join-Path $PluginRoot 'skills\copilot'
+if (Test-Path $skillsDir) {
+  foreach ($skillDir in (Get-ChildItem -Path $skillsDir -Directory)) {
+    $destSkill = Join-Path $ProjectRoot ".github\skills\$($skillDir.Name)"
+    if (-not (Test-Path $destSkill)) { New-Item -ItemType Directory -Path $destSkill | Out-Null }
+    foreach ($md in (Get-ChildItem -Path $skillDir.FullName -Filter '*.md')) {
+      Copy-Item $md.FullName (Join-Path $destSkill $md.Name) -Force
+      Write-Host "  updated: .github\skills\$($skillDir.Name)\$($md.Name)"
+    }
+  }
 }
 
 # Copy copilot-instructions.md (skip if present)
@@ -25,11 +45,6 @@ if (Test-Path $dest) {
   Write-Host "  copied: .github\copilot-instructions.md"
 }
 
-# Copy extension (always overwrite — plugin-managed)
-Copy-Item (Join-Path $PluginRoot 'extensions\sdlc\extension.mjs') `
-          (Join-Path $ProjectRoot '.github\extensions\sdlc\extension.mjs') -Force
-Write-Host '  updated: .github\extensions\sdlc\extension.mjs'
-
 # Copy core-memory.md (skip if present)
 $cm = Join-Path $ProjectRoot "core-memory.md"
 if (-not (Test-Path $cm)) {
@@ -37,7 +52,7 @@ if (-not (Test-Path $cm)) {
   Write-Host "  copied: core-memory.md"
 } else { Write-Host "  skip (exists): core-memory.md" }
 
-# Copy relay template
+# Copy relay template (always overwrite)
 $relSrc = Join-Path $PluginRoot "templates\relay-template.md"
 if (Test-Path $relSrc) {
   Copy-Item $relSrc (Join-Path $ProjectRoot "templates\relay-template.md") -Force
@@ -53,5 +68,6 @@ if (-not (Test-Path $tb)) {
 
 Write-Host ""
 Write-Host "Done."
-Write-Host "  gh copilot CLI:    /sdlc slash command via .github\extensions\sdlc\extension.mjs"
-Write-Host "  Copilot Chat:      .github\copilot-instructions.md loaded as repo context"
+Write-Host "  Copilot agents:  .github\agents\*.agent.md"
+Write-Host "  Copilot skills:  .github\skills\*\SKILL.md"
+Write-Host "  Copilot Chat:    .github\copilot-instructions.md loaded as repo context"

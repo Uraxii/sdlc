@@ -52,7 +52,8 @@ ZIPS = {
     ],
     "sdlc-copilot": [
         ("",             ".github/copilot-instructions.md",              ROOT),
-        ("",             "dist/staging/extensions/sdlc/extension.mjs",   STAGING),
+        ("agents/",      "dist/staging/agents/copilot/*.agent.md",       STAGING),
+        ("skills/",      "dist/staging/skills/copilot/**/*.md",          STAGING),
         ("",             "dist/staging/core-memory.md",                  STAGING),
         ("templates/",   "dist/staging/templates/*.md",                  STAGING),
         ("",             "hooks/copilot/install.sh",                     ROOT),
@@ -257,35 +258,64 @@ def cmd_compress():
             shutil.copy2(src, dst)
             print(f"  Copied {name} → dist/staging/{name}")
 
-    _embed_agents_in_extension()
+    _convert_agents_for_copilot()
 
     print(f"\nStaging complete → {STAGING}/")
 
 
-def _embed_agents_in_extension():
-    """Read compressed agents from staging, embed into extension.mjs via placeholder replacement."""
+COPILOT_TOOL_MAP = {
+    "Read": "read", "Edit": "edit", "Write": "edit",
+    "Grep": "search", "Glob": "search", "Bash": "execute", "Agent": "agent",
+}
+
+
+def _convert_agents_for_copilot():
+    """Convert compressed agents to copilot .agent.md format with adapted frontmatter."""
     staging_agents = Path(STAGING) / "agents"
-    agent_files = sorted(staging_agents.glob("*.md"))
-    if not agent_files:
-        raise BuildError("No agent .md files in dist/staging/agents/ -- run compress first.")
+    copilot_dir = staging_agents / "copilot"
+    copilot_dir.mkdir(parents=True, exist_ok=True)
 
-    agent_dict = {}
-    for f in agent_files:
-        agent_dict[f.stem] = f.read_text(encoding="utf-8")
+    for src in sorted(staging_agents.glob("*.md")):
+        content = src.read_text(encoding="utf-8")
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            # No frontmatter, copy as-is
+            dst = copilot_dir / (src.stem + ".agent.md")
+            dst.write_text(content, encoding="utf-8")
+            continue
 
-    src = Path(ROOT, "hooks", "copilot", "extensions", "sdlc", "extension.mjs")
-    if not src.exists():
-        raise BuildError(f"Extension source not found: {src}")
+        fm_lines = parts[1].strip().splitlines()
+        new_fm = []
+        for line in fm_lines:
+            if line.startswith("tools:"):
+                # Parse comma-separated tools, map to copilot aliases, dedup
+                tools_str = line.split(":", 1)[1].strip()
+                tools = [t.strip() for t in tools_str.split(",")]
+                mapped = []
+                seen = set()
+                for t in tools:
+                    alias = COPILOT_TOOL_MAP.get(t, t.lower())
+                    if alias not in seen:
+                        mapped.append(alias)
+                        seen.add(alias)
+                quoted = ", ".join(f'"{a}"' for a in mapped)
+                new_fm.append(f"tools: [{quoted}]")
+            elif line.startswith("model:"):
+                continue  # skip model field
+            else:
+                new_fm.append(line)
 
-    content = src.read_text(encoding="utf-8")
-    replacement = json.dumps(agent_dict)
-    content = content.replace('"__AGENTS_PLACEHOLDER__"', replacement)
+        new_content = "---\n" + "\n".join(new_fm) + "\n---" + parts[2]
+        dst = copilot_dir / (src.stem + ".agent.md")
+        dst.write_text(new_content, encoding="utf-8")
+        print(f"  Converted {src.stem} -> agents/copilot/{src.stem}.agent.md")
 
-    out_dir = Path(STAGING, "extensions", "sdlc")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out = out_dir / "extension.mjs"
-    out.write_text(content, encoding="utf-8")
-    print(f"  Embedded {len(agent_dict)} agents into {out.relative_to(ROOT)}")
+    # Copy copilot-only orchestrator verbatim
+    orch_src = Path(ROOT, "agents", "copilot", "sdlc-orchestrator.original.md")
+    if orch_src.exists():
+        orch_dst = copilot_dir / "sdlc-orchestrator.agent.md"
+        shutil.copy2(orch_src, orch_dst)
+        print(f"  Copied sdlc-orchestrator -> agents/copilot/sdlc-orchestrator.agent.md")
 
 
 def _copy_verbatim(src_dir: Path, dst_dir: Path):

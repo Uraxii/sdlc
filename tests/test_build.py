@@ -62,16 +62,17 @@ REQUIRES_STAGING = pytest.mark.skipif(
 )
 
 
-def extension_embedded():
-    """True when dist/staging/extensions/sdlc/extension.mjs exists."""
-    return (Path(STAGING) / "extensions" / "sdlc" / "extension.mjs").exists()
+def copilot_agents_populated():
+    """True when dist/staging/agents/copilot/ has at least one .agent.md file."""
+    copilot_dir = Path(STAGING) / "agents" / "copilot"
+    return copilot_dir.exists() and any(copilot_dir.glob("*.agent.md"))
 
 
-REQUIRES_EXTENSION = pytest.mark.skipif(
-    not extension_embedded(),
+REQUIRES_COPILOT_AGENTS = pytest.mark.skipif(
+    not copilot_agents_populated(),
     reason=(
-        "dist/staging/extensions/sdlc/extension.mjs absent — "
-        "run 'uv run python build.py compress' to embed agents into extension"
+        "dist/staging/agents/copilot/ absent or empty — "
+        "run 'uv run python build.py compress' to convert agents for copilot"
     ),
 )
 
@@ -414,92 +415,99 @@ def test_arcname_no_double_prefix():
 
 
 # ---------------------------------------------------------------------------
-# Test 9 — Agent embedding in extension.mjs
+# Test 9 — Copilot agent conversion
 # ---------------------------------------------------------------------------
 
-@REQUIRES_EXTENSION
-def test_embedded_extension_exists():
-    """dist/staging/extensions/sdlc/extension.mjs exists after compress."""
-    ext = Path(STAGING) / "extensions" / "sdlc" / "extension.mjs"
-    assert ext.exists(), f"Embedded extension missing: {ext}"
-    assert ext.stat().st_size > 0, f"Embedded extension is empty: {ext}"
-
-
-@REQUIRES_EXTENSION
-def test_embedded_extension_no_placeholder():
-    """Embedded extension.mjs must not contain the raw placeholder string."""
-    ext = Path(STAGING) / "extensions" / "sdlc" / "extension.mjs"
-    content = ext.read_text()
-    assert '"__AGENTS_PLACEHOLDER__"' not in content, (
-        "Placeholder was not replaced in embedded extension"
-    )
-
-
-@REQUIRES_EXTENSION
-def test_embedded_extension_contains_agents():
-    """Embedded extension.mjs contains agent keys matching staging agents."""
-    ext = Path(STAGING) / "extensions" / "sdlc" / "extension.mjs"
-    content = ext.read_text()
-
-    agent_files = sorted(AGENTS_STAGING.glob("*.md"))
+@REQUIRES_COPILOT_AGENTS
+def test_copilot_agents_exist():
+    """dist/staging/agents/copilot/ contains .agent.md files after compress."""
+    copilot_dir = Path(STAGING) / "agents" / "copilot"
+    agent_files = list(copilot_dir.glob("*.agent.md"))
+    assert len(agent_files) >= 1, f"No .agent.md files in {copilot_dir}"
     for f in agent_files:
-        stem = f.stem
-        # The agent key should appear as a JSON key in the embedded object
-        assert f'"{stem}"' in content, (
-            f"Agent key '{stem}' not found in embedded extension"
-        )
+        assert f.stat().st_size > 0, f"Empty copilot agent: {f.name}"
 
 
-@REQUIRES_EXTENSION
-def test_copilot_zip_contains_extension():
-    """sdlc-copilot.zip contains extensions/sdlc/extension.mjs."""
-    zip_path = DIST / "sdlc-copilot.zip"
-    with zipfile.ZipFile(zip_path) as zf:
-        names = zf.namelist()
+@REQUIRES_COPILOT_AGENTS
+def test_copilot_agents_have_yaml_array_tools():
+    """Copilot .agent.md files have tools as YAML array (not comma string)."""
+    copilot_dir = Path(STAGING) / "agents" / "copilot"
+    for f in sorted(copilot_dir.glob("*.agent.md")):
+        content = f.read_text(encoding="utf-8")
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            continue
+        fm = parts[1]
+        for line in fm.strip().splitlines():
+            if line.startswith("tools:"):
+                tools_val = line.split(":", 1)[1].strip()
+                assert tools_val.startswith("["), (
+                    f"{f.name}: tools should be YAML array, got: {tools_val!r}"
+                )
+                # Verify only copilot-valid tool names
+                for tool in ("Read", "Edit", "Write", "Grep", "Glob", "Bash"):
+                    assert f'"{tool}"' not in tools_val, (
+                        f"{f.name}: unmapped Claude Code tool name '{tool}' in: {tools_val}"
+                    )
 
-    assert "extensions/sdlc/extension.mjs" in names, (
-        f"extensions/sdlc/extension.mjs not found in {zip_path.name}: {names}"
+
+@REQUIRES_COPILOT_AGENTS
+def test_copilot_agents_no_model_field():
+    """Copilot .agent.md files must not contain model: field."""
+    copilot_dir = Path(STAGING) / "agents" / "copilot"
+    for f in sorted(copilot_dir.glob("*.agent.md")):
+        content = f.read_text(encoding="utf-8")
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            continue
+        fm = parts[1]
+        for line in fm.strip().splitlines():
+            assert not line.startswith("model:"), (
+                f"{f.name}: model: field should be stripped for copilot"
+            )
+
+
+@REQUIRES_COPILOT_AGENTS
+def test_copilot_orchestrator_in_staging():
+    """sdlc-orchestrator.agent.md exists in copilot staging dir."""
+    orch = Path(STAGING) / "agents" / "copilot" / "sdlc-orchestrator.agent.md"
+    assert orch.exists(), f"Orchestrator not found: {orch}"
+    content = orch.read_text()
+    assert "tools:" in content, "Orchestrator missing tools frontmatter"
+
+
+@REQUIRES_COPILOT_AGENTS
+def test_copilot_agent_count_matches_staging():
+    """Copilot dir has one .agent.md per staging agent plus orchestrator."""
+    staging_count = len(list(AGENTS_STAGING.glob("*.md")))
+    copilot_dir = Path(STAGING) / "agents" / "copilot"
+    copilot_count = len(list(copilot_dir.glob("*.agent.md")))
+    # copilot = staging agents + orchestrator
+    assert copilot_count == staging_count + 1, (
+        f"Expected {staging_count + 1} copilot agents "
+        f"({staging_count} converted + orchestrator), got {copilot_count}"
     )
 
 
 # ---------------------------------------------------------------------------
-# Test 10 — Extension source structure
+# Test 10 — Copilot orchestrator source
 # ---------------------------------------------------------------------------
 
-def test_extension_source_has_placeholder():
-    """Source extension.mjs contains the AGENTS placeholder for build replacement."""
-    src = Path(ROOT) / "hooks" / "copilot" / "extensions" / "sdlc" / "extension.mjs"
+def test_copilot_orchestrator_source_exists():
+    """agents/copilot/sdlc-orchestrator.original.md exists as source."""
+    src = Path(ROOT) / "agents" / "copilot" / "sdlc-orchestrator.original.md"
+    assert src.exists(), f"Orchestrator source missing: {src}"
     content = src.read_text()
-    assert '"__AGENTS_PLACEHOLDER__"' in content, (
-        "Source extension.mjs missing placeholder string"
+    assert "tools:" in content, "Orchestrator source missing tools frontmatter"
+
+
+def test_copilot_orchestrator_not_in_root_agents():
+    """Orchestrator must be in agents/copilot/, not agents/ (avoids compression pickup)."""
+    root_agents = Path(ROOT) / "agents"
+    orch_files = list(root_agents.glob("sdlc-orchestrator*"))
+    assert not orch_files, (
+        f"Orchestrator found in agents/ root (should be in agents/copilot/): {orch_files}"
     )
-
-
-def test_extension_source_no_promise_all():
-    """Source extension.mjs must not use Promise.all (SDK has no message correlation)."""
-    src = Path(ROOT) / "hooks" / "copilot" / "extensions" / "sdlc" / "extension.mjs"
-    content = src.read_text()
-    assert "Promise.all" not in content, (
-        "Promise.all found in extension source -- concurrent sendAndWait is broken"
-    )
-
-
-def test_extension_source_has_skip_permission():
-    """Source extension.mjs sets skipPermission: true on the tool."""
-    src = Path(ROOT) / "hooks" / "copilot" / "extensions" / "sdlc" / "extension.mjs"
-    content = src.read_text()
-    assert "skipPermission: true" in content, "Tool missing skipPermission: true"
-
-
-def test_extension_source_no_console_log():
-    """Source extension.mjs must use session.log, not console.log."""
-    src = Path(ROOT) / "hooks" / "copilot" / "extensions" / "sdlc" / "extension.mjs"
-    lines = src.read_text().split("\n")
-    console_lines = [
-        l.strip() for l in lines
-        if "console.log" in l and not l.strip().startswith("//")
-    ]
-    assert not console_lines, f"console.log found: {console_lines}"
 
 
 # ---------------------------------------------------------------------------
