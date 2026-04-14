@@ -348,6 +348,7 @@ def test_original_md_files_exist():
 def test_missing_caveman_compress_dir(monkeypatch):
     """cmd_compress raises BuildError naming CAVEMAN_COMPRESS_DIR when env var is unset."""
     monkeypatch.delenv("CAVEMAN_COMPRESS_DIR", raising=False)
+    monkeypatch.setattr(build, "_load_cache", lambda: {})
 
     with pytest.raises(build.BuildError) as exc_info:
         build.cmd_compress()
@@ -361,6 +362,7 @@ def test_missing_caveman_compress_dir(monkeypatch):
 def test_empty_caveman_compress_dir(monkeypatch):
     """cmd_compress raises BuildError when CAVEMAN_COMPRESS_DIR is set but empty string."""
     monkeypatch.setenv("CAVEMAN_COMPRESS_DIR", "")
+    monkeypatch.setattr(build, "_load_cache", lambda: {})
 
     with pytest.raises(build.BuildError) as exc_info:
         build.cmd_compress()
