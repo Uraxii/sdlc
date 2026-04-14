@@ -13,6 +13,18 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+# Load .env if present (no dependency required)
+_env_path = Path(__file__).parent / ".env"
+if _env_path.exists():
+    for line in _env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        key, _, val = line.partition("=")
+        key, val = key.strip(), val.strip()
+        if key and val and key not in os.environ:
+            os.environ[key] = val
+
 
 class BuildError(Exception):
     """Fatal build error — halts the pipeline."""
