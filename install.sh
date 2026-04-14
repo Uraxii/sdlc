@@ -66,3 +66,13 @@ if [ "$IDE" = "claude-code" ]; then
 else
   bash "$STAGING/hooks/$IDE/install.sh"
 fi
+
+SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
+if [ -f "$SCRIPT_PATH" ] && [[ "$SCRIPT_PATH" != /dev/* ]]; then
+  printf "Delete install script (%s)? [y/N] " "$SCRIPT_PATH"
+  read -r ans </dev/tty
+  case "$ans" in
+    [yY]*) rm "$SCRIPT_PATH"; echo "Deleted." ;;
+    *)     echo "Kept." ;;
+  esac
+fi

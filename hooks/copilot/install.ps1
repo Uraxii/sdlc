@@ -19,7 +19,7 @@ if (Test-Path $dest) {
   Write-Host "  copied: .github\copilot-instructions.md"
 }
 
-Get-ChildItem -Path (Join-Path $PluginRoot "skills-copilot") -Directory | ForEach-Object {
+Get-ChildItem -Path (Join-Path $PluginRoot "skills\copilot") -Directory | ForEach-Object {
   $name = $_.Name
   $src  = Join-Path $_.FullName "SKILL.md"
   if (-not (Test-Path $src)) { return }
@@ -34,7 +34,17 @@ Get-ChildItem -Path (Join-Path $PluginRoot "skills-copilot") -Directory | ForEac
   }
 }
 
+$extDir = Join-Path $ProjectRoot '.github\extensions\sdlc'
+if (-not (Test-Path $extDir)) { New-Item -ItemType Directory -Path $extDir | Out-Null }
+$dest = Join-Path $extDir 'extension.mjs'
+if (Test-Path $dest) {
+  Write-Host '  skip (exists): .github\extensions\sdlc\extension.mjs'
+} else {
+  Copy-Item (Join-Path $PluginRoot 'extensions\sdlc\extension.mjs') $dest
+  Write-Host '  copied: .github\extensions\sdlc\extension.mjs'
+}
+
 Write-Host ""
 Write-Host "Done."
-Write-Host "  gh copilot CLI:    skills available under .github\skills\"
+Write-Host "  gh copilot CLI:    extension at .github\extensions\sdlc\extension.mjs"
 Write-Host "  Copilot Chat:      .github\copilot-instructions.md loaded as repo context"

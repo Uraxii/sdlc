@@ -25,7 +25,7 @@ done
 
 # Create empty memory files (skip if present)
 for agent in architect developer skeptic tester security-auditor ux-designer \
-             friction-reviewer orchestrator progenitor monitor; do
+             friction-reviewer orchestrator progenitor monitor planner; do
   mem="$PROJECT_ROOT/.claude/agents/memory/$agent.md"
   if [ ! -f "$mem" ]; then
     touch "$mem"
@@ -64,9 +64,4 @@ else
 fi
 
 echo ""
-echo "Done. Next steps:"
-echo "  1. Edit .claude/agents/ux-designer.md — fill in design token table"
-echo "  2. Edit .claude/agents/CLAUDE.md — update <project>/agent-memory.md path"
-echo "  3. Edit .claude/agents/developer.md — update version file reference"
-echo "  4. Create <project>/agent-memory.md with project domain knowledge"
-echo "  5. Use /sdlc to start a pipeline run"
+echo "Done. Use /sdlc to start a pipeline run."

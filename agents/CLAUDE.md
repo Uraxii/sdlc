@@ -15,8 +15,7 @@ Prefix responses with `**[RoleName]**` when adopting role.
 ### Pipeline Modes
 
 Mode selected by `/sdlc` at run start; recorded in relay file.
-8 modes via sub-skills (`sdlc:<mode>`): `full`, `lightweight`, `refactor`, `hotfix`, `dependency-bump`, `config-data`, `docs-only`, `poc`.
-`poc` NOT shippable — needs `full` before merge to main.
+2 modes via sub-skills (`sdlc:<mode>`): `full`, `light`.
 
 ### Orchestrator
 

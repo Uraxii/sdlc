@@ -33,7 +33,16 @@ for skill_dir in "$PLUGIN_ROOT/skills/copilot/"/*/; do
   fi
 done
 
+mkdir -p "$PROJECT_ROOT/.github/extensions/sdlc"
+dest="$PROJECT_ROOT/.github/extensions/sdlc/extension.mjs"
+if [ -f "$dest" ]; then
+  echo "  skip (exists): .github/extensions/sdlc/extension.mjs"
+else
+  cp "$PLUGIN_ROOT/extensions/sdlc/extension.mjs" "$dest"
+  echo "  copied: .github/extensions/sdlc/extension.mjs"
+fi
+
 echo ""
 echo "Done."
-echo "  gh copilot CLI:    skills available under .github/skills/"
+echo "  gh copilot CLI:    extension at .github/extensions/sdlc/extension.mjs"
 echo "  Copilot Chat:      .github/copilot-instructions.md loaded as repo context"

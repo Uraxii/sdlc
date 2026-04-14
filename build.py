@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -39,6 +40,7 @@ ZIPS = {
     "sdlc-copilot": [
         ("",  ".github/copilot-instructions.md",              ROOT),
         ("",  "dist/staging/skills/copilot/**/*.md",          STAGING),
+        ("",  "dist/staging/extensions/sdlc/extension.mjs",   STAGING),
         ("",  "hooks/copilot/install.sh",                     ROOT),
         ("",  "hooks/copilot/install.ps1",                    ROOT),
     ],
@@ -206,7 +208,35 @@ def cmd_compress():
             shutil.copy2(src, dst)
             print(f"  Copied {name} → dist/staging/{name}")
 
+    _embed_agents_in_extension()
+
     print(f"\nStaging complete → {STAGING}/")
+
+
+def _embed_agents_in_extension():
+    """Read compressed agents from staging, embed into extension.mjs via placeholder replacement."""
+    staging_agents = Path(STAGING) / "agents"
+    agent_files = sorted(staging_agents.glob("*.md"))
+    if not agent_files:
+        raise BuildError("No agent .md files in dist/staging/agents/ -- run compress first.")
+
+    agent_dict = {}
+    for f in agent_files:
+        agent_dict[f.stem] = f.read_text(encoding="utf-8")
+
+    src = Path(ROOT, "hooks", "copilot", "extensions", "sdlc", "extension.mjs")
+    if not src.exists():
+        raise BuildError(f"Extension source not found: {src}")
+
+    content = src.read_text(encoding="utf-8")
+    replacement = json.dumps(agent_dict)
+    content = content.replace('"__AGENTS_PLACEHOLDER__"', replacement)
+
+    out_dir = Path(STAGING, "extensions", "sdlc")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out = out_dir / "extension.mjs"
+    out.write_text(content, encoding="utf-8")
+    print(f"  Embedded {len(agent_dict)} agents into {out.relative_to(ROOT)}")
 
 
 def _copy_verbatim(src_dir: Path, dst_dir: Path):

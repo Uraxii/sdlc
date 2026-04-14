@@ -1,6 +1,6 @@
 ---
 name: sdlc-full
-description: Full mode — new feature. Architect → [UX Designer] → Skeptic → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer. UX Designer runs when task includes UI changes.
+description: Full mode — new feature. Planner → Architect → [UX Designer] → Skeptic → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer. UX Designer runs when task includes UI changes.
 ---
 
 # SDLC: Full
@@ -9,37 +9,32 @@ New feature. UI or logic changes.
 
 ## Sequence
 ```
-Architect → [UX Designer]* → Skeptic (design) → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer
+Planner → Architect → [UX Designer]* → Skeptic (design) → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer
 ```
 `*` UX Designer runs when task includes UI changes (layout, components, tokens, visual behavior).
-`[X ∥ Y]` = Orchestrator spawns concurrently; both blocking gates.
+`[X ∥ Y]` = spawn concurrently in a single message; both are blocking gates.
 
 ## Steps
 
-1. Create `sdlc/<slug>/relay.md`:
-   ```
-   # SDLC Relay: <slug>
-   > Created: <date> | Mode: Full | Status: In Progress
-   ---
-   ```
+Create a task for each step. Spawn each role agent. Mark tasks done as they complete.
 
-2. Append Planning section (scope, tasks+AC, sequencing, downstream notes).
+1. **Planner** (subagent_type: planner): scope, task breakdown, dependencies, sequencing. Decides if UX Designer needed. No technical decisions.
 
-3. **Architect**: system design, component boundaries, data flow, API contracts, ADRs. No code. → next step.
+2. **Architect** (subagent_type: architect): system design, component boundaries, data flow, API contracts, ADRs. No code. Read Planner output for scope + tasks.
 
-4. *(If UI)* **UX Designer**: read Architect relay. Token-exact specs, layout, interaction states, rationale. → Skeptic.
+3. *(If UI)* **UX Designer** (subagent_type: ux-designer): read Architect output. Token-exact specs, layout, interaction states, rationale.
 
-5. **Skeptic (design)**: review Architect output (and UX spec if present) jointly.
+4. **Skeptic** (subagent_type: skeptic): review Architect output (and UX spec if present).
    Security checklist: auth/authz stated? data exposure defined? external inputs identified?
-   Verdict: Approved / Revise / Rejected.
+   Verdict: Approved / Revise / Rejected. On reject → loop to Architect.
 
-6. **Developer**: implement per design (and UX spec if UI). No deviation w/o change request. Bump version.
+5. **Developer** (subagent_type: developer): implement per design (and UX spec if UI). Bump version.
 
-7. **Orchestrator** spawns concurrently:
-   - **Skeptic (code)**: correctness, patterns, test quality (+ UX spec vs impl if UI ran)
-   - **Security Auditor**: OWASP, auth/authz, data exposure, injection
-   Both approve before Tester.
+6. **Skeptic + Security Auditor** (spawn both in one message, concurrently):
+   - Skeptic (subagent_type: skeptic): correctness, patterns, test quality
+   - Security Auditor (subagent_type: security-auditor): OWASP, auth/authz, data exposure, injection
+   Both must approve before proceeding. On reject → loop to Developer.
 
-8. **Tester**: test against AC. Visual regression if UX ran. Fix stale tests.
+7. **Tester** (subagent_type: tester): test against AC. Visual regression if UX ran. Fix stale tests.
 
-9. **Friction Reviewer**: process review, write to memory.
+8. **Friction Reviewer** (subagent_type: friction-reviewer): process review, write to memory.

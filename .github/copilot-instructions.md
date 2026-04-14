@@ -27,16 +27,8 @@ If user says `/sdlc`, `start sdlc`, or describes a task without specifying a mod
 
 | Mode | When |
 |------|------|
-| `full-ui` | New feature + UI changes |
-| `full-logic` | New feature, no UI |
-| `lightweight-ui` | Bug fix or small change + UI |
-| `lightweight-logic` | Bug fix or small change, no UI |
-| `refactor` | Behavior-preserving restructure only |
-| `hotfix` | Production incident — time-critical |
-| `dependency-bump` | Library version update only |
-| `config-data` | Config, constant, or static data change only |
-| `docs-only` | Docs or comments only |
-| `poc` | Fast proof-of-concept — NOT shippable |
+| `full` | New feature (UX Designer runs if UI changes) |
+| `light` | Bug fix or small change (UX Designer runs if UI changes) |
 
 To invoke a mode directly: `Use sdlc:<mode> for this task.`
 
@@ -44,62 +36,17 @@ To invoke a mode directly: `Use sdlc:<mode> for this task.`
 
 ## Modes
 
-### `sdlc:full-ui` — New feature + UI
+### `sdlc:full` — New feature
 ```
-Architect → UX Designer → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
+Architect → [UX Designer]* → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
 ```
+`*` UX Designer mandatory when task touches UI.
 
-### `sdlc:full-logic` — New feature, no UI
+### `sdlc:light` — Bug fix or small change
 ```
-Architect → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
+[UX Designer]* → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
 ```
-
-### `sdlc:lightweight-ui` — Bug fix + UI
-```
-UX Designer → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
-```
-
-### `sdlc:lightweight-logic` — Bug fix, no UI
-```
-Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
-```
-
-### `sdlc:refactor` — Behavior-preserving restructure
-```
-Architect → Skeptic (design) → Developer → Skeptic (code) + Security Auditor → Tester → Friction Reviewer
-```
-Constraint: behavior identical before/after. Architect documents invariants.
-
-### `sdlc:hotfix` — Production incident
-```
-Developer → Skeptic + Security Auditor → Tester → (deploy) → Friction Reviewer
-```
-Minimal fix only. No scope expand.
-
-### `sdlc:dependency-bump` — Library update
-```
-Security Auditor → Tester
-```
-Check CVEs, license changes, transitive deps, breaking API changes.
-
-### `sdlc:config-data` — Config/static data only
-```
-Skeptic → Friction Reviewer
-```
-Verify data-only (no logic). Format consistent, no assumptions broken.
-
-### `sdlc:docs-only` — Docs/comments only
-```
-Skeptic
-```
-Verify accuracy against code.
-
-### `sdlc:poc` — Proof of concept
-```
-Skeptic (concept) → Developer → Tester (smoke)
-```
-Fast, cheap. No version bump. No Security Auditor. No Friction Reviewer.
-**NOT SHIPPABLE.** Needs `sdlc:full-ui` or `sdlc:full-logic` before merge to main. Tester gaps = starting plan for full run.
+`*` UX Designer mandatory when task touches UI. No Architect. No Skeptic design review.
 
 ---
 
@@ -108,7 +55,7 @@ Fast, cheap. No version bump. No Security Auditor. No Friction Reviewer.
 **Skeptic** blocks all modes. Must approve before next role.
 **Security Auditor** blocks post-Developer all code-change modes.
 **UX Designer** mandatory any UI change — not skippable.
-**Friction Reviewer** mandatory except docs-only.
+**Friction Reviewer** mandatory in all modes.
 
 ---
 
