@@ -39,7 +39,6 @@ ZIPS = {
     ],
     "sdlc-copilot": [
         ("",  ".github/copilot-instructions.md",              ROOT),
-        ("",  "dist/staging/skills/copilot/**/*.md",          STAGING),
         ("",  "dist/staging/extensions/sdlc/extension.mjs",   STAGING),
         ("",  "hooks/copilot/install.sh",                     ROOT),
         ("",  "hooks/copilot/install.ps1",                    ROOT),
@@ -311,6 +310,15 @@ def cmd_zip(names=None):
                     print(f"  {arc}")
         size = os.path.getsize(out)
         print(f"{name}.zip  ({size // 1024}K)")
+
+    # Copy standalone install scripts to dist/ for release upload
+    for name in ("install.sh", "install.ps1"):
+        src = os.path.join(ROOT, name)
+        if os.path.isfile(src):
+            shutil.copy2(src, os.path.join(DIST, name))
+            print(f"  Copied {name} → dist/{name}")
+        else:
+            raise BuildError(f"Required install script missing: {name}")
 
     print(f"\nBuilt {len(targets)} zip(s) → {DIST}/")
 
