@@ -4,6 +4,7 @@ description: >
   Start a pipeline run. Select mode (full or light) based on task, then orchestrate
   the role sequence directly — visible tasks, visible agent spawns.
 ---
+Respond in caveman — terse, no filler, fragments OK.
 
 # SDLC Pipeline
 
@@ -25,6 +26,7 @@ description: >
    - Create a task for each role in the sequence (TaskCreate)
    - Spawn each role agent individually (Agent tool with the role's subagent_type)
    - Mark tasks complete as each role finishes (TaskUpdate)
+   - After agent returns, estimate tokens: len(result) / 4 rounded to 1 decimal (min 0.1). Update task subject: `"RoleName: description -> X.Xk⛃"` via TaskUpdate. Skip on error/empty.
    - For concurrent steps (Skeptic ∥ Security Auditor), spawn both agents in a single message
    - On gate rejection, loop back to the appropriate role
    - Pass relay context between roles via agent prompts
@@ -35,6 +37,7 @@ description: >
    - All upstream relay context (accumulated output from prior roles)
    - Specific files to read/modify
    - Scope boundaries (what NOT to do)
+   - Speech: "Respond caveman — terse, no filler, fragments OK."
 
 7. After pipeline completes, summarize results to the user.
 

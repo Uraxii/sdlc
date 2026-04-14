@@ -1,6 +1,6 @@
 # SDLC Plugin
 
-Structured multi-role pipeline for AI-assisted development. Replaces ad-hoc AI sessions with disciplined workflows: role-based agents, 4 pipeline modes, parallel review gates, and persistent memory across sessions.
+Structured multi-role pipeline for AI-assisted development. Replaces ad-hoc AI sessions with disciplined workflows: role-based agents, 2 pipeline modes, parallel review gates, and persistent memory across sessions.
 
 Supports: **Claude Code** · **GitHub Copilot CLI**
 
@@ -55,7 +55,7 @@ irm https://github.com/Uraxii/sdlc/releases/latest/download/install.ps1 -OutFile
 
 | Mode | Pipeline |
 |------|----------|
-| `full` | Architect → [UX Designer]* → Skeptic → Developer → Skeptic ∥ SecAudit → Tester → Friction |
+| `full` | Planner → Architect → [UX Designer]* → Skeptic → Developer → Skeptic ∥ SecAudit → Tester → Friction |
 | `light` | [UX Designer]* → Developer → Skeptic ∥ SecAudit → Tester → Friction |
 
 `*` UX Designer runs when task includes UI changes.
@@ -67,6 +67,7 @@ Skeptic + Security Auditor always run concurrently (∥) after implementation. N
 
 | Role | Responsibility |
 |------|----------------|
+| Planner | Scope, task breakdown, dependencies, priorities — picks pipeline mode |
 | Architect | System design, patterns, ADRs, API contracts — no code |
 | Developer | Implements Architect output — bumps version on every change |
 | UX Designer | Visual identity, design tokens, style spec — mandatory on UI changes |

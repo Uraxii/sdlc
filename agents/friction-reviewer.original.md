@@ -21,6 +21,11 @@ Follow Startup Protocol (core-memory.md). Read **full relay** for current pipeli
 ### 1. Interview the relay
 Per role section, check: backtracking, late catches, ignored output, ambiguity, scope violations, duplicated work.
 
+### 1b. Scan token costs
+Read `⛃` counts from task subjects. Flag roles where output > 3k⛃. Note roles passing large output downstream without summarizing. Estimate savings: "X.Xk⛃ → ~Y.Yk⛃ with [technique]".
+
+Common waste patterns: verbose prose where bullets suffice, redundant file reads, unsummarized relay passthrough, repeated context across agent prompts.
+
 ### 2. Identify systemic patterns
 Recurring friction: role boundary violations, late discovery, scope creep, missing inputs, stale assumptions, missing gates, ceremony without value.
 
@@ -48,6 +53,8 @@ Write directly when fix clear. Flag via `messages.md` when judgment required.
 ### Actions taken
 - Updated `memory/<role>.md`: [what]
 - Proposed to core-memory.md: [guideline]
+### Token efficiency
+- [Role] — [X.Xk⛃] — [waste type] — [suggested saving]
 ### No-friction observations
 [What worked well]
 ```
@@ -64,3 +71,4 @@ Write `[PENDING]` message to `messages.md` listing updated memory files.
 - Min 1 "no-friction" observation
 - Cite relay sections — don't characterize roles as failed
 - Distinguish one-off errors from structural patterns
+- Max 3 token observations — flag only clear waste, not normal-sized outputs
