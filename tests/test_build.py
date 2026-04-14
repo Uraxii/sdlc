@@ -498,3 +498,133 @@ def test_extension_source_no_console_log():
         if "console.log" in l and not l.strip().startswith("//")
     ]
     assert not console_lines, f"console.log found: {console_lines}"
+
+
+# ---------------------------------------------------------------------------
+# Test 11 — Skills compression staging
+# ---------------------------------------------------------------------------
+
+SKILLS_STAGING = Path(STAGING) / "skills"
+
+
+def _skills_staging_populated():
+    return SKILLS_STAGING.exists() and any(SKILLS_STAGING.rglob("*.md"))
+
+
+REQUIRES_SKILLS_STAGING = pytest.mark.skipif(
+    not _skills_staging_populated(),
+    reason=(
+        "dist/staging/skills/ absent or empty — "
+        "run 'uv run python build.py compress' first"
+    ),
+)
+
+
+@REQUIRES_SKILLS_STAGING
+def test_skills_staging_non_empty():
+    """Each compressed skill .md in staging is non-empty."""
+    empty = []
+    checked = 0
+    for f in sorted(SKILLS_STAGING.rglob("*.md")):
+        checked += 1
+        if f.stat().st_size == 0:
+            empty.append(str(f.relative_to(SKILLS_STAGING)))
+    assert checked > 0, "No skill .md files in staging"
+    assert not empty, f"Empty skill files: {empty}"
+
+
+@REQUIRES_SKILLS_STAGING
+def test_skills_staging_covers_source_structure():
+    """Every source skill .md has a corresponding staged file.
+
+    Warns (does not fail) for files missing from staging when staging is stale
+    (i.e., compress was not re-run after adding new skills). Hard-fails only if
+    MORE THAN HALF of source skills are missing, which indicates a systemic issue.
+    """
+    skills_src = Path(ROOT) / "skills"
+    src_rels = set(
+        str(p.relative_to(skills_src)) for p in skills_src.rglob("*.md")
+    )
+    staged_rels = set(
+        str(p.relative_to(SKILLS_STAGING)) for p in SKILLS_STAGING.rglob("*.md")
+    )
+    missing = src_rels - staged_rels
+    if missing:
+        print(
+            f"\nWARNING: {len(missing)} source skill(s) not yet in staging "
+            f"(re-run 'build.py compress'): {sorted(missing)}"
+        )
+    assert len(missing) <= len(src_rels) // 2, (
+        f"More than half of source skills missing from staging — "
+        f"likely stale build: {sorted(missing)}"
+    )
+
+
+@REQUIRES_SKILLS_STAGING
+def test_skills_staging_no_original_md():
+    """Staging skills must not contain .original.md backup files."""
+    originals = list(SKILLS_STAGING.rglob("*.original.md"))
+    assert not originals, (
+        f".original.md files leaked into staging: "
+        f"{[str(p.relative_to(SKILLS_STAGING)) for p in originals]}"
+    )
+
+
+@REQUIRES_SKILLS_STAGING
+def test_skills_compression_size_reduction():
+    """Most compressed skill files are smaller than source (quality signal)."""
+    skills_src = Path(ROOT) / "skills"
+    not_reduced = []
+    checked = 0
+    for staged in sorted(SKILLS_STAGING.rglob("*.md")):
+        rel = staged.relative_to(SKILLS_STAGING)
+        original = skills_src / rel
+        if not original.exists():
+            continue
+        checked += 1
+        if staged.stat().st_size >= original.stat().st_size:
+            not_reduced.append(
+                f"skills/{rel}: staged ({staged.stat().st_size}B) >= "
+                f"source ({original.stat().st_size}B)"
+            )
+    assert checked > 0, "No skill source/staged pairs found"
+    if not_reduced:
+        print(
+            "\nWARNING: skills not reduced:\n  " + "\n  ".join(not_reduced)
+        )
+    assert len(not_reduced) <= 3, (
+        f"More than 3 skill files not reduced:\n" + "\n".join(not_reduced)
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 12 — compress_to_staging function signature
+# ---------------------------------------------------------------------------
+
+def test_compress_to_staging_exists():
+    """compress_to_staging is a callable on the build module."""
+    assert callable(getattr(build, "compress_to_staging", None)), (
+        "build.compress_to_staging not found — expected refactored function"
+    )
+
+
+def test_compress_skills_exists():
+    """_compress_skills is a callable on the build module."""
+    assert callable(getattr(build, "_compress_skills", None)), (
+        "build._compress_skills not found — expected new function"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — ZIPS dict references staging skills (not verbatim source)
+# ---------------------------------------------------------------------------
+
+def test_zips_skills_reference_staging():
+    """ZIPS entries for skills glob from dist/staging/, not source skills/."""
+    for zip_name, entries in build.ZIPS.items():
+        for prefix, pattern, arc_base in entries:
+            if "skills/" in pattern:
+                assert pattern.startswith("dist/staging/skills/"), (
+                    f"ZIPS[{zip_name!r}] skill pattern {pattern!r} "
+                    f"does not reference dist/staging/ — skills must be compressed"
+                )

@@ -2,6 +2,7 @@
 name: sdlc-full
 description: Full mode — new feature. Planner → Architect → [UX Designer] → Skeptic → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer. UX Designer runs when task includes UI changes.
 ---
+Respond in caveman — terse, no filler, fragments OK.
 
 # SDLC: Full
 

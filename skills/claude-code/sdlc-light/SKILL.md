@@ -2,6 +2,7 @@
 name: sdlc-light
 description: Light mode — bug fix or clear-scope change. [UX Designer] → Developer → [Skeptic ∥ Security Auditor] → Tester → Friction Reviewer. UX Designer runs when task includes UI changes.
 ---
+Respond in caveman — terse, no filler, fragments OK.
 
 # SDLC: Light
 

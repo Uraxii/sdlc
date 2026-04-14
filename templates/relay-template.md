@@ -99,5 +99,8 @@
 
 **Friction points:** {what hard/slow/wrong}
 
+**Token efficiency:**
+- {role — cost — waste type — suggested saving}
+
 **Memory updates:**
 - {role memory: what written where}

@@ -115,15 +115,14 @@ def _caveman_dir() -> str:
     return d
 
 
-def compress_to_staging(src: Path, staging_agents_dir: Path) -> None:
-    """Compress src (.original.md) → staging_agents_dir/<name>.md via subprocess.
+def compress_to_staging(src: Path, dst: Path) -> None:
+    """Compress src → dst via subprocess.
 
-    Copies src to staging as the target name, runs caveman compress on it
+    Copies src to dst, runs caveman compress on it
     (isolated subprocess, no shared context), removes the backup caveman creates.
     """
-    out_name = src.stem.removesuffix(".original") + ".md"
-    staging_path = staging_agents_dir / out_name
-    staging_agents_dir.mkdir(parents=True, exist_ok=True)
+    staging_path = dst
+    dst.parent.mkdir(parents=True, exist_ok=True)
 
     # Copy source → staging as target filename so caveman writes the right name
     shutil.copy2(src, staging_path)
@@ -146,12 +145,48 @@ def compress_to_staging(src: Path, staging_agents_dir: Path) -> None:
         backup.unlink()
 
 
+def _compress_skills(cache: dict):
+    """Compress skills/**/*.md → dist/staging/skills/<relative-path>."""
+    skills_src = Path(ROOT, "skills")
+    staging_skills = Path(STAGING, "skills")
+    if not skills_src.exists():
+        return
+    to_compress = []
+    for src in sorted(skills_src.rglob("*.md")):
+        h = _file_hash(src)
+        rel = src.relative_to(skills_src)
+        dst = staging_skills / rel
+        if cache.get(str(src)) == h and dst.exists():
+            print(f"  Cached   skills/{rel} (unchanged)")
+        else:
+            to_compress.append((src, dst, h))
+    if not to_compress:
+        print("All skill files up to date (cache hit).")
+    else:
+        print(f"Compressing {len(to_compress)} skill file(s)...")
+        errors = []
+        with ThreadPoolExecutor(max_workers=min(8, max(1, len(to_compress)))) as pool:
+            futures = {
+                pool.submit(compress_to_staging, src, dst): (src, dst, h)
+                for src, dst, h in to_compress
+            }
+            for future in as_completed(futures):
+                src, dst, h = futures[future]
+                try:
+                    future.result()
+                    cache[str(src)] = h
+                except BuildError as exc:
+                    errors.append(str(exc))
+        if errors:
+            raise BuildError("\n".join(errors))
+
+
 # ---------- Subcommands ----------
 
 
 def cmd_compress():
-    """Compress all agents/*.original.md → dist/staging/agents/*.md.
-    Also copies verbatim files (skills, templates, core-memory.md, CLAUDE.md) to staging.
+    """Compress agents/*.original.md + skills/**/*.md → dist/staging/.
+    Also copies verbatim files (templates, core-memory.md, CLAUDE.md) to staging.
     """
     staging_agents = Path(STAGING) / "agents"
     staging_agents.mkdir(parents=True, exist_ok=True)
@@ -164,11 +199,11 @@ def cmd_compress():
     to_compress = []
     for src in originals:
         h = _file_hash(src)
-        out = staging_agents / (src.stem.removesuffix(".original") + ".md")
-        if cache.get(str(src)) == h and out.exists():
+        dst = staging_agents / (src.stem.removesuffix(".original") + ".md")
+        if cache.get(str(src)) == h and dst.exists():
             print(f"  Cached   {src.name} (unchanged)")
         else:
-            to_compress.append((src, h))
+            to_compress.append((src, dst, h))
 
     if not to_compress:
         print("All agent files up to date (cache hit).")
@@ -177,25 +212,25 @@ def cmd_compress():
         errors = []
         with ThreadPoolExecutor(max_workers=len(to_compress)) as pool:
             futures = {
-                pool.submit(compress_to_staging, src, staging_agents): (src, h)
-                for src, h in to_compress
+                pool.submit(compress_to_staging, src, dst): (src, dst, h)
+                for src, dst, h in to_compress
             }
             for future in as_completed(futures):
-                src, h = futures[future]
+                src, dst, h = futures[future]
                 try:
                     future.result()
                     cache[str(src)] = h
                 except BuildError as exc:
                     errors.append(str(exc))
-        _save_cache(cache)
         if errors:
             raise BuildError("\n".join(errors))
 
-    # Copy verbatim: skills, templates, core-memory.md, CLAUDE.md
-    _copy_verbatim(
-        Path(ROOT, "skills"),
-        Path(STAGING, "skills"),
-    )
+    # Compress skills
+    _compress_skills(cache)
+
+    _save_cache(cache)
+
+    # Copy verbatim: templates, core-memory.md, CLAUDE.md
     _copy_verbatim(
         Path(ROOT, "templates"),
         Path(STAGING, "templates"),

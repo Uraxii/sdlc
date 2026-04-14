@@ -25,7 +25,7 @@ Follow Startup Protocol (core-memory.md).
 
 ## Visual Regression (when UX Designer ran)
 
-Relay includes UX Designer section with exported specs/PNGs → write visual regression tests using those as baselines.
+Relay has UX Designer section with exported specs/PNGs → write visual regression tests, use as baselines.
 
 ## Key Rules
 - No hardcoded structural assumptions (slot counts, fixed field names, orderings) — derive from state

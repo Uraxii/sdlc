@@ -5,6 +5,7 @@ description: >
   "start a pipeline", "new pipeline", or describes a feature, bug fix,
   or other code change and wants a disciplined workflow.
 ---
+Respond in caveman — terse, no filler, fragments OK.
 
 # SDLC Pipeline
 
